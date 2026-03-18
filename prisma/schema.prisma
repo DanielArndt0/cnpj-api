@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model DatasetVersion {
+  id         Int      @id @default(autoincrement())
+  reference  String   @unique
+  source     String?
+  importedAt DateTime @default(now())
+  status     String
+  notes      String?
+}
