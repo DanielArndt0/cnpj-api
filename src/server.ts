@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { buildApp } from "./app.js";
+import { buildApp } from "./app/app.js";
 
 const start = async () => {
   try {
@@ -7,11 +7,10 @@ const start = async () => {
     const port = Number(process.env.PORT || 3000);
 
     await app.listen({ port, host: "0.0.0.0" });
-    console.log(`Servidor rodando em http://localhost:${port}`);
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     process.exit(1);
   }
 };
 
-start();
+void start();
