@@ -1,6 +1,6 @@
 {
   "name": "cnpj-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API open source e gratuita para consulta de dados de CNPJ, com suporte a filtros personalizados, pensada para facilitar a vida do desenvolvedor.",
   "main": "dist/server.js",
   "engines": {
