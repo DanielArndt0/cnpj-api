@@ -16,3 +16,26 @@ export async function query<T extends QueryResultRow>(
 ) {
   return pool.query<T>(text, params);
 }
+
+export async function closeDatabasePool() {
+  await pool.end();
+}
+
+export async function checkDatabaseConnection(timeoutMs = 2000) {
+  const startedAt = Date.now();
+
+  await Promise.race([
+    pool.query("select 1"),
+    new Promise((_, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("Database health check timeout."));
+      }, timeoutMs);
+
+      timeout.unref?.();
+    }),
+  ]);
+
+  return {
+    latencyMs: Date.now() - startedAt,
+  };
+}

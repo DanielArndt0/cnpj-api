@@ -19,21 +19,4 @@ export async function rootRoutes(app: FastifyInstance) {
       },
     }),
   );
-
-  app.get(
-    "/health",
-    {
-      schema: {
-        tags: ["Root"],
-        summary: "Health check da API",
-      },
-    },
-    async () => ({
-      sucesso: true,
-      dados: {
-        servico: "cnpj-api",
-        status: "healthy",
-      },
-    }),
-  );
 }

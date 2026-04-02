@@ -5,7 +5,7 @@ import swaggerUi from "@fastify/swagger-ui";
 
 export async function registerPlugins(app: FastifyInstance) {
   await app.register(cors, {
-    origin: true,
+    origin: false,
   });
 
   await app.register(swagger, {
@@ -19,6 +19,10 @@ export async function registerPlugins(app: FastifyInstance) {
       servers: [{ url: "http://localhost:3000", description: "Local" }],
       tags: [
         { name: "Root", description: "Rotas básicas da aplicação" },
+        {
+          name: "Health",
+          description: "Verificações de saúde e disponibilidade da aplicação",
+        },
         {
           name: "Consulta por CNPJ",
           description: "Consulta consolidada por CNPJ",
