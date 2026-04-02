@@ -3,7 +3,11 @@ import {
   buildPaginatedResponse,
   parseSimplePagination,
 } from "../../shared/http/pagination.js";
-import { sanitizeDigits } from "../../shared/utils/cnpj.js";
+import { assertValidCnpjRoot } from "../../shared/utils/cnpj.js";
+import {
+  normalizeBrazilianStateCode,
+  normalizeMainCnaeCode,
+} from "../../shared/utils/filters.js";
 import { presentEstablishmentSummary } from "../cnpj/cnpj.presenter.js";
 import { EstablishmentRepository } from "./establishment.repository.js";
 
@@ -17,9 +21,17 @@ export class EstablishmentService {
     uf?: string;
     codigoCnaePrincipal?: string;
   }) {
-    if (!query.cnpjBasico && !query.uf && !query.codigoCnaePrincipal) {
+    const cnpjRoot = query.cnpjBasico
+      ? assertValidCnpjRoot(query.cnpjBasico)
+      : undefined;
+    const stateCode = normalizeBrazilianStateCode(query.uf);
+    const mainCnaeCode = normalizeMainCnaeCode(query.codigoCnaePrincipal);
+
+    const hasSafeCombination = Boolean(stateCode && mainCnaeCode);
+
+    if (!cnpjRoot && !hasSafeCombination) {
       throw new BadRequestError(
-        "Informe pelo menos um filtro entre cnpjBasico, uf ou codigoCnaePrincipal para consultar estabelecimentos.",
+        "Informe cnpjBasico ou combine uf com codigoCnaePrincipal para consultar estabelecimentos.",
       );
     }
 
@@ -29,18 +41,14 @@ export class EstablishmentService {
       this.repository.findMany({
         skip: pagination.skip,
         take: pagination.limit,
-        cnpjRoot: query.cnpjBasico
-          ? sanitizeDigits(query.cnpjBasico)
-          : undefined,
-        stateCode: query.uf,
-        mainCnaeCode: query.codigoCnaePrincipal,
+        cnpjRoot,
+        stateCode,
+        mainCnaeCode,
       }),
       this.repository.count({
-        cnpjRoot: query.cnpjBasico
-          ? sanitizeDigits(query.cnpjBasico)
-          : undefined,
-        stateCode: query.uf,
-        mainCnaeCode: query.codigoCnaePrincipal,
+        cnpjRoot,
+        stateCode,
+        mainCnaeCode,
       }),
     ]);
 

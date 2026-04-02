@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { errorEnvelopeSchema } from "../../shared/contracts/api.schemas.js";
 import { CnpjController } from "./cnpj.controller.js";
 import { CnpjRepository } from "./cnpj.repository.js";
 import { CnpjService } from "./cnpj.service.js";
@@ -14,6 +15,8 @@ export async function cnpjRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Consulta por CNPJ"],
         summary: "Consulta consolidada por CNPJ",
+        description:
+          "Consulta consolidada por CNPJ básico ou completo. A API sanitiza a entrada para aceitar apenas dígitos úteis antes de aplicar as regras de negócio.",
         params: {
           type: "object",
           required: ["cnpj"],
@@ -21,9 +24,14 @@ export async function cnpjRoutes(app: FastifyInstance) {
             cnpj: {
               type: "string",
               description:
-                "CNPJ básico com 8 dígitos ou CNPJ completo com 14 dígitos.",
+                "CNPJ básico com 8 dígitos ou CNPJ completo com 14 dígitos. A entrada pode ser enviada com pontuação.",
+              examples: ["12345678", "12.345.678/0001-95"],
             },
           },
+        },
+        response: {
+          400: errorEnvelopeSchema,
+          404: errorEnvelopeSchema,
         },
       },
     },

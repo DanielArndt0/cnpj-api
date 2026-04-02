@@ -1,10 +1,6 @@
 # CNPJ API
 
-API para consulta de dados públicos de CNPJ a partir de uma base local estruturada com base no layout de dados disponibilizado pela Receita Federal.
-
-## Sobre o projeto
-
-O **CNPJ API** é um projeto criado para expor, por meio de uma API HTTP, os dados do Cadastro Nacional da Pessoa Jurídica de forma simples, organizada e pronta para consumo por aplicações externas.
+O **CNPJ API** é um projeto criado para expor, por meio de uma API REST, os dados do Cadastro Nacional da Pessoa Jurídica de forma simples, organizada e pronta para consumo por aplicações externas.
 
 A proposta do projeto é permitir que você monte sua própria API de consulta de CNPJ sobre uma base local, utilizando como referência o conjunto de dados públicos disponibilizado pela Receita Federal no Portal Brasileiro de Dados Abertos.
 
@@ -16,7 +12,7 @@ A base pública utilizada como referência neste ecossistema é a disponibilizad
 
 ## Relação com o CNPJ DB Loader
 
-O **CNPJ API** faz parte de um fluxo maior.
+O projeto **CNPJ API** faz parte de um fluxo maior.
 
 A preparação dos dados não acontece neste repositório. Antes de usar a API, é necessário que o banco tenha sido previamente montado e populado por uma aplicação separada responsável por:
 
@@ -30,7 +26,7 @@ Esse papel é realizado pelo projeto [CNPJ DB Loader](https://github.com/DanielA
 
 Em resumo:
 
-- **CNPJ DB Loader** prepara o banco;
+- **CNPJ DB Loader** prepara o banco para PostgreSQL;
 - **CNPJ API** consome esse banco já pronto e expõe os dados para consulta.
 
 ## Escopo da API
@@ -41,6 +37,16 @@ Atualmente, a API foi adaptada para consumir apenas:
 - tabelas auxiliares de domínio.
 
 Ela não depende das etapas de staging, importação, checkpoints ou controle operacional para funcionar em tempo de consulta.
+
+## O que esta API oferece
+
+De forma geral, o projeto foi pensado para oferecer uma camada de consulta organizada sobre a base de CNPJ, permitindo:
+
+- consultar informações por CNPJ;
+- acessar dados de empresas, estabelecimentos e sócios;
+- consultar tabelas auxiliares e domínios;
+- separar com clareza a aplicação de leitura da aplicação de carga;
+- servir de base para integrações, sistemas internos, dashboards e automações.
 
 ## Tabelas lidas pela API
 
@@ -65,49 +71,27 @@ Ela não depende das etapas de staging, importação, checkpoints ou controle op
 - `partners`
 - `simples_options`
 
-## Tabelas fora do escopo
+> A API ignora propositalmente estruturas internas de processamento utilizadas pelo [CNPJ DB Loader](https://github.com/DanielArndt0/cnpj-db-loader)
 
-A API ignora propositalmente estruturas internas de processamento, como por exemplo:
+## Contrato mínimo de busca
 
-- `staging_*`
-- `import_*`
-- tabelas de bulk actions
-- tabelas de checkpoints
-- tabelas de quarantine
-- tabelas de controle operacional
+As rotas de listagem seguem o princípio de **não aceitar consultas abertas sem filtro mínimo útil**.
 
-## O que esta API oferece
+Regras atuais:
 
-De forma geral, o projeto foi pensado para oferecer uma camada de consulta organizada sobre a base de CNPJ, permitindo:
+- `GET /api/cnpjs/:cnpj`: exige `cnpj` no path;
+- `GET /api/empresas`: exige `cnpjBasico` ou `razaoSocial`;
+- `GET /api/estabelecimentos`: exige `cnpjBasico` ou a combinação `uf + codigoCnaePrincipal`;
+- `GET /api/socios`: exige `cnpjBasico`.
 
-- consultar informações por CNPJ;
-- acessar dados de empresas, estabelecimentos e sócios;
-- consultar tabelas auxiliares e domínios;
-- separar com clareza a aplicação de leitura da aplicação de carga;
-- servir de base para integrações, sistemas internos, dashboards e automações.
+Esse comportamento também está refletido no Swagger.
 
-## Rotas
+## Documentação adicional
 
-A API possui rotas de consulta e rotas auxiliares, incluindo:
+Arquivos complementares foram adicionados em [`/docs`](./docs):
 
-- rotas base, como verificação de funcionamento;
-- rotas de consulta por CNPJ;
-- rotas de listagem de empresas, estabelecimentos e sócios;
-- rotas de acesso a tabelas de domínio.
-
-A documentação detalhada das rotas pode evoluir conforme o projeto for expandido.
-
-## Arquitetura
-
-A aplicação segue uma estrutura organizada por responsabilidades internas, com camadas como:
-
-- rotas
-- controllers
-- services
-- repositories
-- presenters
-
-Essa separação facilita manutenção, evolução e escalabilidade do projeto ao longo do tempo.
+- [`API search rules`](./docs/api-search-rules.md)
+- [`Swagger filter contract`](./docs/swagger-filter-contract.md)
 
 ## Observação importante
 
@@ -121,23 +105,13 @@ Instale as dependências:
 
 ```bash
 npm install
-```
-
-Execute em modo de desenvolvimento:
-
-```bash
 npm run dev
-```
-
-Gere o build:
-
-```bash
-npm run build
 ```
 
 Execute em modo de produção:
 
 ```bash
+npm run build
 npm start
 ```
 

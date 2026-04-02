@@ -1,4 +1,8 @@
 import type { FastifyInstance } from "fastify";
+import {
+  errorEnvelopeSchema,
+  establishmentQuerystringSchema,
+} from "../../shared/contracts/api.schemas.js";
 import { EstablishmentController } from "./establishment.controller.js";
 import { EstablishmentRepository } from "./establishment.repository.js";
 import { EstablishmentService } from "./establishment.service.js";
@@ -14,15 +18,11 @@ export async function establishmentRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Estabelecimentos"],
         summary: "Lista controlada de estabelecimentos",
-        querystring: {
-          type: "object",
-          properties: {
-            page: { type: "string" },
-            limit: { type: "string" },
-            cnpjBasico: { type: "string" },
-            uf: { type: "string" },
-            codigoCnaePrincipal: { type: "string" },
-          },
+        description:
+          "Lista estabelecimentos com filtros mínimos obrigatórios. Informe cnpjBasico ou combine uf com codigoCnaePrincipal.",
+        querystring: establishmentQuerystringSchema,
+        response: {
+          400: errorEnvelopeSchema,
         },
       },
     },

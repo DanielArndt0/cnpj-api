@@ -1,4 +1,8 @@
 import type { FastifyInstance } from "fastify";
+import {
+  companyQuerystringSchema,
+  errorEnvelopeSchema,
+} from "../../shared/contracts/api.schemas.js";
 import { CompanyController } from "./company.controller.js";
 import { CompanyRepository } from "./company.repository.js";
 import { CompanyService } from "./company.service.js";
@@ -14,14 +18,11 @@ export async function companyRoutes(app: FastifyInstance) {
       schema: {
         tags: ["Empresas"],
         summary: "Lista controlada de empresas",
-        querystring: {
-          type: "object",
-          properties: {
-            page: { type: "string" },
-            limit: { type: "string" },
-            cnpjBasico: { type: "string" },
-            razaoSocial: { type: "string" },
-          },
+        description:
+          "Lista empresas com consulta mínima útil. Informe cnpjBasico ou razaoSocial para evitar consultas amplas e custosas.",
+        querystring: companyQuerystringSchema,
+        response: {
+          400: errorEnvelopeSchema,
         },
       },
     },
