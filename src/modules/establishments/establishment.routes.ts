@@ -17,9 +17,9 @@ export async function establishmentRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ["Estabelecimentos"],
-        summary: "Lista controlada de estabelecimentos",
+        summary: "Busca especializada de estabelecimentos",
         description:
-          "Lista estabelecimentos com filtros mínimos obrigatórios. Informe cnpjBasico ou combine uf com codigoCnaePrincipal.",
+          "Busca unidades cadastrais específicas, como matriz e filial. Use esta rota para filtros operacionais, como UF e CNAE principal. Para visão consolidada de um documento específico, prefira /api/cnpjs/:cnpj.",
         querystring: establishmentQuerystringSchema,
         response: {
           400: errorEnvelopeSchema,

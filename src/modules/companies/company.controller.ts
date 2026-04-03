@@ -10,6 +10,7 @@ export class CompanyController {
         page?: string;
         limit?: string;
         cnpjBasico?: string;
+        cnpj?: string;
         razaoSocial?: string;
       };
     }>,

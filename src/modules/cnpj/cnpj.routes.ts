@@ -14,9 +14,9 @@ export async function cnpjRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ["Consulta por CNPJ"],
-        summary: "Consulta consolidada por CNPJ",
+        summary: "Consulta principal e consolidada por CNPJ",
         description:
-          "Consulta consolidada por CNPJ básico ou completo. A API sanitiza a entrada para aceitar apenas dígitos úteis antes de aplicar as regras de negócio.",
+          "Endpoint principal da API para quem já possui um CNPJ e deseja uma visão consolidada da empresa, do estabelecimento principal, de sócios e de enquadramentos relacionados. Aceita CNPJ básico ou completo e sanitiza a entrada antes de aplicar as regras de negócio.",
         params: {
           type: "object",
           required: ["cnpj"],
@@ -25,7 +25,7 @@ export async function cnpjRoutes(app: FastifyInstance) {
               type: "string",
               description:
                 "CNPJ básico com 8 dígitos ou CNPJ completo com 14 dígitos. A entrada pode ser enviada com pontuação.",
-              examples: ["12345678", "12.345.678/0001-95"],
+              examples: ["12.345.678/0001-95", "12.345.678"],
             },
           },
         },

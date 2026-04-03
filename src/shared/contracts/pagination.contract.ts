@@ -3,13 +3,13 @@ export const paginationQuerystringSchema = {
   properties: {
     page: {
       type: "string",
-      description: "Página desejada. Deve ser um inteiro positivo.",
+      description: "Página desejada.",
       examples: ["1"],
     },
     limit: {
       type: "string",
       description:
-        "Quantidade de itens por página. Deve ser um inteiro positivo. O limite máximo aplicado pela API é 50.",
+        "Quantidade de itens por página. O limite máximo aplicado pela API é 50.",
       examples: ["20"],
     },
   },

@@ -17,9 +17,9 @@ export async function partnerRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ["Sócios"],
-        summary: "Lista controlada de sócios",
+        summary: "Busca especializada de sócios",
         description:
-          "Lista sócios vinculados a um CNPJ básico específico. Não permite listagem aberta sem vínculo empresarial.",
+          "Busca vínculos societários associados a uma empresa. Esta rota sempre exige vínculo com CNPJ para evitar listagens abertas.",
         querystring: partnerQuerystringSchema,
         response: {
           400: errorEnvelopeSchema,

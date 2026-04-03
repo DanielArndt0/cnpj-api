@@ -46,5 +46,17 @@ export async function registerPlugins(app: FastifyInstance) {
     },
     staticCSP: true,
     transformSpecificationClone: true,
+    theme: {
+      css: [
+        {
+          filename: "swagger-overrides.css",
+          content: `
+          .swagger-ui td.parameters-col_description > div.renderedMarkdown:nth-of-type(2) {
+            display: none !important;
+          }
+        `,
+        },
+      ],
+    },
   });
 }

@@ -17,9 +17,9 @@ export async function companyRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ["Empresas"],
-        summary: "Lista controlada de empresas",
+        summary: "Busca especializada de empresas",
         description:
-          "Lista empresas com consulta mínima útil. Informe cnpjBasico ou razaoSocial para evitar consultas amplas e custosas.",
+          "Busca entidades jurídicas raiz da base de CNPJ. Use esta rota quando quiser pesquisar por razão social ou pela raiz do CNPJ. Para visão consolidada de um documento específico, prefira /api/cnpjs/:cnpj.",
         querystring: companyQuerystringSchema,
         response: {
           400: errorEnvelopeSchema,

@@ -6,7 +6,12 @@ export class PartnerController {
 
   list = async (
     request: FastifyRequest<{
-      Querystring: { page?: string; limit?: string; cnpjBasico?: string };
+      Querystring: {
+        page?: string;
+        limit?: string;
+        cnpjBasico?: string;
+        cnpj?: string;
+      };
     }>,
     reply: FastifyReply,
   ) => {

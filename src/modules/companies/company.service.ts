@@ -3,7 +3,10 @@ import {
   buildPaginatedResponse,
   parseSimplePagination,
 } from "../../shared/http/pagination.js";
-import { assertValidCnpjRoot } from "../../shared/utils/cnpj.js";
+import {
+  assertValidCnpjRoot,
+  extractCnpjRootFromDocument,
+} from "../../shared/utils/cnpj.js";
 import {
   normalizeOptionalText,
   validateMinimumTextLength,
@@ -18,10 +21,14 @@ export class CompanyService {
     page?: string;
     limit?: string;
     cnpjBasico?: string;
+    cnpj?: string;
     razaoSocial?: string;
   }) {
-    const cnpjRoot = query.cnpjBasico
-      ? assertValidCnpjRoot(query.cnpjBasico)
+    const rawCnpj = query.cnpj ?? query.cnpjBasico;
+    const cnpjRoot = rawCnpj
+      ? query.cnpj
+        ? extractCnpjRootFromDocument(query.cnpj)
+        : assertValidCnpjRoot(query.cnpjBasico ?? "")
       : undefined;
     const companyName = normalizeOptionalText(query.razaoSocial);
 

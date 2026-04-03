@@ -2,15 +2,23 @@ import {
   buildPaginatedResponse,
   parseSimplePagination,
 } from "../../shared/http/pagination.js";
-import { assertValidCnpjRoot } from "../../shared/utils/cnpj.js";
+import { extractCnpjRootFromDocument } from "../../shared/utils/cnpj.js";
 import { presentPartner } from "../cnpj/cnpj.presenter.js";
 import { PartnerRepository } from "./partner.repository.js";
 
 export class PartnerService {
   constructor(private readonly repository: PartnerRepository) {}
 
-  async list(query: { page?: string; limit?: string; cnpjBasico?: string }) {
-    const cnpjRoot = assertValidCnpjRoot(query.cnpjBasico ?? "");
+  async list(query: {
+    page?: string;
+    limit?: string;
+    cnpjBasico?: string;
+    cnpj?: string;
+  }) {
+    const cnpjRoot = extractCnpjRootFromDocument(
+      query.cnpj ?? query.cnpjBasico ?? "",
+      query.cnpj ? "cnpj" : "cnpjBasico",
+    );
     const pagination = parseSimplePagination(query);
 
     const [items, total] = await Promise.all([

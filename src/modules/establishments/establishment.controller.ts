@@ -10,6 +10,7 @@ export class EstablishmentController {
         page?: string;
         limit?: string;
         cnpjBasico?: string;
+        cnpj?: string;
         uf?: string;
         codigoCnaePrincipal?: string;
       };

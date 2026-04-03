@@ -21,3 +21,19 @@ export function assertValidCnpjRoot(value: string, fieldName = "cnpjBasico") {
 
   return normalized;
 }
+
+export function extractCnpjRootFromDocument(value: string, fieldName = "cnpj") {
+  const normalized = sanitizeDigits(value);
+
+  if (normalized.length === 8) {
+    return normalized;
+  }
+
+  if (normalized.length === 14) {
+    return normalized.slice(0, 8);
+  }
+
+  throw new BadRequestError(
+    `${fieldName} deve conter 8 dígitos para raiz ou 14 dígitos para CNPJ completo.`,
+  );
+}

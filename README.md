@@ -1,14 +1,14 @@
 # CNPJ API
 
-O **CNPJ API** é um projeto criado para expor, por meio de uma API REST, os dados do Cadastro Nacional da Pessoa Jurídica de forma simples, organizada e pronta para consumo por aplicações externas.
+O **CNPJ API** é um projeto criado para expor, por meio de uma API REST, os dados do **Cadastro Nacional da Pessoa Jurídica** de forma simples, organizada e pronta para consumo por aplicações externas.
 
-A proposta do projeto é permitir que você monte sua própria API de consulta de CNPJ sobre uma base local, utilizando como referência o conjunto de dados públicos disponibilizado pela Receita Federal no Portal Brasileiro de Dados Abertos.
+A proposta do projeto é permitir que você monte sua própria API de consulta de CNPJ sobre uma base local, utilizando como referência o conjunto de dados públicos disponibilizado pela **Receita Federal** no **Portal Brasileiro de Dados Abertos**.
 
 Em vez de depender diretamente de arquivos brutos ou de rotinas internas de carga, esta API trabalha sobre um banco já preparado, com foco exclusivo em **leitura, consulta e exposição de dados via REST**.
 
 ## Fonte oficial dos dados
 
-A base pública utilizada como referência neste ecossistema é a disponibilizada no Portal Brasileiro de Dados Abertos. Esse conjunto de dados reúne os arquivos públicos relacionados ao CNPJ, usados como base para processamento, transformação e posterior disponibilização via banco de dados local. As informações do conjunto são mantidas pelo governo federal no portal [dados.gov.br](https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj)
+A base pública utilizada como referência neste ecossistema é a disponibilizada no **Portal Brasileiro de Dados Abertos**. Esse conjunto de dados reúne os arquivos públicos relacionados ao CNPJ, usados como base para processamento, transformação e posterior disponibilização via banco de dados local. As informações do conjunto são mantidas pelo governo federal no portal [dados.gov.br](https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj)
 
 ## Relação com o CNPJ DB Loader
 
@@ -44,7 +44,7 @@ De forma geral, o projeto foi pensado para oferecer uma camada de consulta organ
 
 - consultar informações por CNPJ;
 - acessar dados de empresas, estabelecimentos e sócios;
-- consultar tabelas auxiliares e domínios;
+- consultar tabelas auxiliares e domínios separadamente, com paginação e filtros leves;
 - separar com clareza a aplicação de leitura da aplicação de carga;
 - servir de base para integrações, sistemas internos, dashboards e automações.
 
@@ -75,14 +75,16 @@ De forma geral, o projeto foi pensado para oferecer uma camada de consulta organ
 
 ## Contrato mínimo de busca
 
-As rotas de listagem seguem o princípio de **não aceitar consultas abertas sem filtro mínimo útil**.
+As rotas de listagem operacionais seguem o princípio de **não aceitar consultas abertas sem filtro mínimo útil**.
 
 Regras atuais:
 
-- `GET /api/cnpjs/:cnpj`: exige `cnpj` no path;
-- `GET /api/empresas`: exige `cnpjBasico` ou `razaoSocial`;
-- `GET /api/estabelecimentos`: exige `cnpjBasico` ou a combinação `uf + codigoCnaePrincipal`;
-- `GET /api/socios`: exige `cnpjBasico`.
+- `GET /api/cnpjs/:cnpj`: exige `cnpj` no path e é o endpoint principal para visão consolidada;
+- `GET /api/empresas`: exige `cnpj`, `cnpjBasico` ou `razaoSocial`;
+- `GET /api/estabelecimentos`: exige `cnpj`, `cnpjBasico` ou a combinação `uf + codigoCnaePrincipal`;
+- `GET /api/socios`: exige `cnpj` ou `cnpjBasico`.
+
+As rotas de domínio ficam fora dessa regra mais rígida porque servem de apoio para filtros, interfaces e integrações auxiliares. Ainda assim, continuam com paginação e limite máximo.
 
 Esse comportamento também está refletido no Swagger.
 
@@ -90,8 +92,10 @@ Esse comportamento também está refletido no Swagger.
 
 Arquivos complementares foram adicionados em [`/docs`](./docs):
 
-- [`API search rules`](./docs/api-search-rules.md)
-- [`Swagger filter contract`](./docs/swagger-filter-contract.md)
+- [`Regras de pesquisa da API`](./docs/api-search-rules.md)
+- [`Visão geral de uso da API`](./docs/api-usage-overview.md)
+- [`Visão geral do modelo de dados`](./docs/data-model-overview.md)
+- [`Referência de domínio`](./docs/domain-reference.md)
 
 ## Observação importante
 
@@ -124,9 +128,3 @@ npm start
 - `npm run typecheck`
 - `npm run format`
 - `npm run format:check`
-
-## Status
-
-Projeto em evolução.
-
-A proposta atual é manter uma API de consulta de CNPJ simples, organizada e desacoplada da rotina de carga, permitindo expansão gradual conforme novas necessidades de busca, filtros e exposição de dados forem surgindo.

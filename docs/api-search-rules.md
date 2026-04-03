@@ -1,56 +1,89 @@
 # Regras de busca da API
 
-## Objetivo
+As rotas **operacionais** de listagem não aceitam consulta aberta sem filtro mínimo útil.
 
-Garantir consultas previsíveis, seguras e compatíveis com uso real em produção.
+Esse princípio reduz consultas pesadas, melhora previsibilidade e deixa a API mais segura para uso externo.
 
-## Princípio adotado
-
-Nenhuma rota de listagem deve aceitar consulta sem filtro mínimo útil.
-
-## Regras por rota
+## Consulta principal
 
 ### `GET /api/cnpjs/:cnpj`
 
-- exige `cnpj` no path;
-- aceita CNPJ básico com **8 dígitos** ou CNPJ completo com **14 dígitos**;
-- sanitiza a entrada para considerar apenas dígitos;
-- rejeita valores inválidos com `400 Bad Request`.
+Esse é o endpoint principal da API.
+
+Use quando você já tem um CNPJ e quer uma visão consolidada do cadastro.
+
+Aceita:
+
+- CNPJ com **8 dígitos** para raiz
+- CNPJ com **14 dígitos** para documento completo
+- entrada formatada, porque a API **sanitiza** os dígitos
+
+## Rotas especializadas
 
 ### `GET /api/empresas`
 
-- exige `cnpjBasico` ou `razaoSocial`;
-- `cnpjBasico` deve conter exatamente **8 dígitos** após sanitização;
-- `razaoSocial` deve conter ao menos **3 caracteres úteis**;
-- paginação simples com `limit` máximo de **50**.
+Exige pelo menos um dos filtros abaixo:
+
+- `cnpj`
+- `cnpjBasico`
+- `razaoSocial`
+
+Observações:
+
+- `cnpj` pode ser enviado com **8** ou **14 dígitos**
+- quando `cnpj` tem **14 dígitos**, a API utiliza a raiz para a busca especializada
+- `cnpjBasico` continua aceito por compatibilidade, mas a preferência pública é pelo uso de `cnpj`
+- `razaoSocial` exige no mínimo **3 caracteres úteis**
 
 ### `GET /api/estabelecimentos`
 
-- exige `cnpjBasico` ou a combinação `uf + codigoCnaePrincipal`;
-- não aceita apenas `uf`;
-- não aceita apenas `codigoCnaePrincipal`;
-- `uf` deve ser uma sigla válida de unidade federativa brasileira;
-- `codigoCnaePrincipal` deve conter exatamente **7 dígitos** após normalização;
-- paginação simples com `limit` máximo de **50**.
+Aceita consulta quando houver:
+
+- `cnpj`
+- `cnpjBasico`
+- ou a combinação `uf + codigoCnaePrincipal`
+
+Observações:
+
+- `cnpj` pode ser enviado com **8** ou **14 dígitos**
+- quando `cnpj` tem **14 dígitos**, a API utiliza a raiz para a busca especializada do grupo empresarial
+- consultas apenas por `uf` ou apenas por `codigoCnaePrincipal` não são aceitas
 
 ### `GET /api/socios`
 
-- exige `cnpjBasico`;
-- não permite listagem aberta sem vínculo empresarial;
-- paginação simples com `limit` máximo de **50**.
+Aceita consulta quando houver:
+
+- `cnpj`
+- `cnpjBasico`
+
+Observações:
+
+- a rota é relacional e sempre exige vínculo com uma empresa específica
+- não permite listagem aberta
+
+## Rotas de domínio
 
 ### `GET /api/dominios`
 
-- permanece mais livre por se tratar de apoio a filtros e integrações;
-- pode evoluir depois com paginação, cache e busca textual.
+Retorna o resumo dos domínios disponíveis.
 
-## Padrão de erro
+### `GET /api/dominios/:domain`
 
-Quando a entrada viola o contrato mínimo de busca, a API responde com envelope padronizado:
+Permite listagem paginada dos domínios com filtros leves.
 
-```json
-{
-  "sucesso": false,
-  "mensagem": "Informe pelo menos um filtro obrigatório: cnpjBasico ou razaoSocial."
-}
-```
+Parâmetros suportados:
+
+- `page`
+- `limit`
+- `q`
+- `code`
+
+### `GET /api/dominios/:domain/:code`
+
+Recupera um item específico do domínio pelo código exato.
+
+## Paginação
+
+O limite máximo por página é **50 registros**.
+
+Essa regra vale tanto para as rotas operacionais quanto para as rotas de domínio.

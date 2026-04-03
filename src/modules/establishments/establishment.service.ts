@@ -3,7 +3,10 @@ import {
   buildPaginatedResponse,
   parseSimplePagination,
 } from "../../shared/http/pagination.js";
-import { assertValidCnpjRoot } from "../../shared/utils/cnpj.js";
+import {
+  assertValidCnpjRoot,
+  extractCnpjRootFromDocument,
+} from "../../shared/utils/cnpj.js";
 import {
   normalizeBrazilianStateCode,
   normalizeMainCnaeCode,
@@ -18,11 +21,15 @@ export class EstablishmentService {
     page?: string;
     limit?: string;
     cnpjBasico?: string;
+    cnpj?: string;
     uf?: string;
     codigoCnaePrincipal?: string;
   }) {
-    const cnpjRoot = query.cnpjBasico
-      ? assertValidCnpjRoot(query.cnpjBasico)
+    const rawCnpj = query.cnpj ?? query.cnpjBasico;
+    const cnpjRoot = rawCnpj
+      ? query.cnpj
+        ? extractCnpjRootFromDocument(query.cnpj)
+        : assertValidCnpjRoot(query.cnpjBasico ?? "")
       : undefined;
     const stateCode = normalizeBrazilianStateCode(query.uf);
     const mainCnaeCode = normalizeMainCnaeCode(query.codigoCnaePrincipal);
@@ -31,7 +38,7 @@ export class EstablishmentService {
 
     if (!cnpjRoot && !hasSafeCombination) {
       throw new BadRequestError(
-        "Informe cnpjBasico ou combine uf com codigoCnaePrincipal para consultar estabelecimentos.",
+        "Informe cnpj ou combine uf com codigoCnaePrincipal para consultar estabelecimentos.",
       );
     }
 
