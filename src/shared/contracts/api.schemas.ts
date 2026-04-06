@@ -17,75 +17,71 @@ export const errorEnvelopeSchema = {
   required: ["sucesso", "mensagem"],
 } as const;
 
-export const companyQuerystringSchema = {
+const locationQuerystringProperties = {
+  uf: {
+    type: "string",
+    description: "Sigla válida de unidade federativa brasileira.",
+    examples: ["PR", "SP"],
+  },
+  municipio: {
+    type: "string",
+    description:
+      "Nome parcial do município. Exige uf para evitar ambiguidades.",
+  },
+} as const;
+
+export const companyListByMainCnaeQuerystringSchema = {
   ...paginationQuerystringSchema,
   description:
-    "Informe ao menos um filtro útil para evitar consultas amplas. Esta rota exige cnpjBasico ou razaoSocial.",
+    "Busca paginada de empresas para prospecção por código CNAE principal. Aceita refinamento opcional por uf e municipio. municipio exige uf.",
+  required: ["codigoCnaePrincipal"],
   properties: {
     ...paginationQuerystringSchema.properties,
-    cnpj: {
+    codigoCnaePrincipal: {
       type: "string",
-      description: "CNPJ da empresa.",
-      examples: ["12.345.678/0001-95"],
+      description: "Código CNAE principal com 7 dígitos.",
+      examples: ["6201501"],
     },
-    cnpjBasico: {
-      type: "string",
-      description: "Parâmetro legado equivalente à raiz do CNPJ com 8 dígitos.",
-      examples: ["12.345.678"],
-    },
+    ...locationQuerystringProperties,
+  },
+} as const;
+
+export const companyListByCompanyNameQuerystringSchema = {
+  ...paginationQuerystringSchema,
+  description:
+    "Busca paginada de empresas para prospecção por razão social. Aceita refinamento opcional por uf e municipio. municipio exige uf.",
+  required: ["razaoSocial"],
+  properties: {
+    ...paginationQuerystringSchema.properties,
     razaoSocial: {
       type: "string",
       description:
-        "Razão social parcial ou completa. Obrigatória quando cnpjBasico não for informado. Deve conter ao menos 3 caracteres úteis.",
+        "Razão social parcial ou completa. Deve conter ao menos 3 caracteres úteis.",
     },
+    ...locationQuerystringProperties,
   },
-  anyOf: [
-    { required: ["cnpj"] },
-    { required: ["cnpjBasico"] },
-    { required: ["razaoSocial"] },
-  ],
 } as const;
 
-export const establishmentQuerystringSchema = {
+export const companyListByPartnerNameQuerystringSchema = {
   ...paginationQuerystringSchema,
   description:
-    "Informe cnpjBasico ou combine uf com codigoCnaePrincipal. Consultas apenas por UF ou apenas por CNAE não são aceitas.",
+    "Busca paginada de empresas para prospecção por nome de sócio. Aceita refinamento opcional por uf e municipio. municipio exige uf.",
+  required: ["nomeSocio"],
   properties: {
     ...paginationQuerystringSchema.properties,
-    cnpj: {
-      type: "string",
-      description: "CNPJ da empresa.",
-      examples: ["12.345.678/0001-95", "12.345.678"],
-    },
-    cnpjBasico: {
-      type: "string",
-      description: "Parâmetro legado equivalente à raiz do CNPJ com 8 dígitos.",
-      examples: ["12.345.678"],
-    },
-    uf: {
+    nomeSocio: {
       type: "string",
       description:
-        "Sigla válida de unidade federativa brasileira. Obrigatória quando cnpjBasico não for informado.",
-      examples: ["PR", "SP"],
+        "Nome parcial do sócio. Deve conter ao menos 3 caracteres úteis.",
     },
-    codigoCnaePrincipal: {
-      type: "string",
-      description:
-        "Código CNAE principal com 7 dígitos. Obrigatório quando cnpjBasico não for informado.",
-      examples: ["6201501"],
-    },
+    ...locationQuerystringProperties,
   },
-  anyOf: [
-    { required: ["cnpj"] },
-    { required: ["cnpjBasico"] },
-    { required: ["uf", "codigoCnaePrincipal"] },
-  ],
 } as const;
 
 export const partnerQuerystringSchema = {
   ...paginationQuerystringSchema,
   description:
-    "Consulta relacional controlada. Esta rota exige cnpjBasico para evitar listagens abertas.",
+    "Consulta relacional controlada. Informe cnpj ou cnpjBasico para consultar sócios vinculados a uma empresa específica.",
   properties: {
     ...paginationQuerystringSchema.properties,
     cnpj: {
@@ -95,11 +91,11 @@ export const partnerQuerystringSchema = {
     },
     cnpjBasico: {
       type: "string",
-      description: "Parâmetro legado equivalente à raiz do CNPJ com 8 dígitos.",
+      description:
+        "Parâmetro legado equivalente à raiz do CNPJ com 8 dígitos. Prefira usar cnpj.",
       examples: ["12.345.678"],
     },
   },
-  anyOf: [{ required: ["cnpj"] }, { required: ["cnpjBasico"] }],
 } as const;
 
 export const domainParamsSchema = {

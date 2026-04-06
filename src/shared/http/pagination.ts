@@ -62,3 +62,24 @@ export function buildPaginatedResponse<T>(params: {
     dados: params.data,
   };
 }
+
+export interface WindowedPaginatedResponse<T> {
+  pagina: number;
+  limite: number;
+  hasNextPage: boolean;
+  dados: T[];
+}
+
+export function buildWindowedPaginatedResponse<T>(params: {
+  page: number;
+  limit: number;
+  data: T[];
+  hasNextPage: boolean;
+}): WindowedPaginatedResponse<T> {
+  return {
+    pagina: params.page,
+    limite: params.limit,
+    dados: params.data,
+    hasNextPage: params.hasNextPage,
+  };
+}

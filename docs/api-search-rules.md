@@ -1,8 +1,8 @@
 # Regras de busca da API
 
-As rotas **operacionais** de listagem não aceitam consulta aberta sem filtro mínimo útil.
+As rotas operacionais seguem contratos diferentes conforme o objetivo da consulta.
 
-Esse princípio reduz consultas pesadas, melhora previsibilidade e deixa a API mais segura para uso externo.
+A consulta consolidada por CNPJ continua sendo a principal entrada para buscas pontuais, enquanto as listas de empresas foram separadas em rotas especializadas para prospecção.
 
 ## Consulta principal
 
@@ -20,35 +20,6 @@ Aceita:
 
 ## Rotas especializadas
 
-### `GET /api/empresas`
-
-Exige pelo menos um dos filtros abaixo:
-
-- `cnpj`
-- `cnpjBasico`
-- `razaoSocial`
-
-Observações:
-
-- `cnpj` pode ser enviado com **8** ou **14 dígitos**
-- quando `cnpj` tem **14 dígitos**, a API utiliza a raiz para a busca especializada
-- `cnpjBasico` continua aceito por compatibilidade, mas a preferência pública é pelo uso de `cnpj`
-- `razaoSocial` exige no mínimo **3 caracteres úteis**
-
-### `GET /api/estabelecimentos`
-
-Aceita consulta quando houver:
-
-- `cnpj`
-- `cnpjBasico`
-- ou a combinação `uf + codigoCnaePrincipal`
-
-Observações:
-
-- `cnpj` pode ser enviado com **8** ou **14 dígitos**
-- quando `cnpj` tem **14 dígitos**, a API utiliza a raiz para a busca especializada do grupo empresarial
-- consultas apenas por `uf` ou apenas por `codigoCnaePrincipal` não são aceitas
-
 ### `GET /api/socios`
 
 Aceita consulta quando houver:
@@ -60,6 +31,60 @@ Observações:
 
 - a rota é relacional e sempre exige vínculo com uma empresa específica
 - não permite listagem aberta
+
+### `GET /api/listas/empresas/cnae`
+
+Exige:
+
+- `codigoCnaePrincipal`
+
+Aceita refinamento opcional com:
+
+- `uf`
+- `municipio`
+
+Observações:
+
+- a rota foi pensada para prospecção por atividade econômica principal
+- `municipio` exige `uf` para reduzir ambiguidades
+- quando `municipio` é informado, a API resolve primeiro os códigos compatíveis antes da consulta principal
+- a paginação continua disponível por `page` e `limit`
+
+### `GET /api/listas/empresas/razaosocial`
+
+Exige:
+
+- `razaoSocial`
+
+Aceita refinamento opcional com:
+
+- `uf`
+- `municipio`
+
+Observações:
+
+- a rota foi pensada para prospecção por nome empresarial
+- `municipio` exige `uf` para reduzir ambiguidades
+- filtros textuais exigem no mínimo **3 caracteres úteis**
+- o filtro textual principal foi isolado da montagem final dos dados para reduzir custo nas tabelas grandes
+
+### `GET /api/listas/empresas/socio`
+
+Exige:
+
+- `nomeSocio`
+
+Aceita refinamento opcional com:
+
+- `uf`
+- `municipio`
+
+Observações:
+
+- a rota foi pensada para prospecção por vínculo societário
+- `municipio` exige `uf` para reduzir ambiguidades
+- filtros textuais exigem no mínimo **3 caracteres úteis**
+- a busca textual de sócio é resolvida primeiro em `partners` e só depois materializa os estabelecimentos
 
 ## Rotas de domínio
 

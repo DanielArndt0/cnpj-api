@@ -43,7 +43,7 @@ Ela não depende das etapas de staging, importação, checkpoints ou controle op
 De forma geral, o projeto foi pensado para oferecer uma camada de consulta organizada sobre a base de CNPJ, permitindo:
 
 - consultar informações por CNPJ;
-- acessar dados de empresas, estabelecimentos e sócios;
+- acessar dados consolidados por CNPJ, listas de empresas e vínculos societários;
 - consultar tabelas auxiliares e domínios separadamente, com paginação e filtros leves;
 - separar com clareza a aplicação de leitura da aplicação de carga;
 - servir de base para integrações, sistemas internos, dashboards e automações.
@@ -73,20 +73,17 @@ De forma geral, o projeto foi pensado para oferecer uma camada de consulta organ
 
 > A API ignora propositalmente estruturas internas de processamento utilizadas pelo [CNPJ DB Loader](https://github.com/DanielArndt0/cnpj-db-loader)
 
-## Contrato mínimo de busca
-
-As rotas de listagem operacionais seguem o princípio de **não aceitar consultas abertas sem filtro mínimo útil**.
+## Contrato atual de busca
 
 Regras atuais:
 
 - `GET /api/cnpjs/:cnpj`: exige `cnpj` no path e é o endpoint principal para visão consolidada;
-- `GET /api/empresas`: exige `cnpj`, `cnpjBasico` ou `razaoSocial`;
-- `GET /api/estabelecimentos`: exige `cnpj`, `cnpjBasico` ou a combinação `uf + codigoCnaePrincipal`;
-- `GET /api/socios`: exige `cnpj` ou `cnpjBasico`.
+- `GET /api/socios`: exige `cnpj` ou `cnpjBasico` para consultar vínculos societários;
+- `GET /api/listas/empresas/cnae`: exige `codigoCnaePrincipal` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`;
+- `GET /api/listas/empresas/razaosocial`: exige `razaoSocial` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`;
+- `GET /api/listas/empresas/socio`: exige `nomeSocio` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`.
 
-As rotas de domínio ficam fora dessa regra mais rígida porque servem de apoio para filtros, interfaces e integrações auxiliares. Ainda assim, continuam com paginação e limite máximo.
-
-Esse comportamento também está refletido no Swagger.
+As rotas de domínio continuam com paginação e filtros leves para apoio a interfaces e integrações auxiliares.
 
 ## Documentação adicional
 

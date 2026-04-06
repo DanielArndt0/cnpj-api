@@ -2,7 +2,7 @@
 
 ## Qual endpoint usar
 
-A API foi organizada em três grupos principais de consulta.
+A API foi organizada em quatro grupos principais de consulta.
 
 ### 1. Consulta principal por CNPJ
 
@@ -18,37 +18,55 @@ Ele foi pensado para reunir, sempre que possível:
 - enquadramento no Simples
 - descrições de tabelas auxiliares relacionadas
 
-### 2. Consultas especializadas
+### 2. Listas de empresas para prospecção
 
-Use os endpoints especializados quando a intenção for pesquisar ou filtrar conjuntos de registros.
+Use uma das rotas especializadas abaixo quando a intenção for montar segmentos paginados para prospecção.
 
-#### `GET /api/empresas`
+#### `GET /api/listas/empresas/cnae`
 
-Use quando quiser pesquisar a entidade jurídica raiz da empresa.
+Use quando quiser encontrar empresas por código CNAE principal.
 
-Exemplos de uso:
+Parâmetros principais:
 
-- busca por razão social
-- busca por raiz de CNPJ
-- filtros para processos de prospecção e enriquecimento cadastral
+- `codigoCnaePrincipal`
+- `uf` opcional
+- `municipio` opcional, sempre com `uf`
 
-#### `GET /api/estabelecimentos`
+#### `GET /api/listas/empresas/razaosocial`
 
-Use quando quiser pesquisar unidades cadastrais específicas, como matriz e filial.
+Use quando quiser encontrar empresas por razão social.
 
-Exemplos de uso:
+Parâmetros principais:
 
-- filtro por UF e CNAE principal
-- busca por grupo empresarial
-- consultas operacionais com foco em localização e atividade principal
+- `razaoSocial`
+- `uf` opcional
+- `municipio` opcional, sempre com `uf`
 
-#### `GET /api/socios`
+#### `GET /api/listas/empresas/socio`
 
-Use quando quiser consultar vínculos societários de uma empresa específica.
+Use quando quiser encontrar empresas por nome de sócio.
 
-Essa rota não permite listagem aberta e sempre exige vínculo com um CNPJ.
+Parâmetros principais:
 
-### 3. Domínios
+- `nomeSocio`
+- `uf` opcional
+- `municipio` opcional, sempre com `uf`
+
+Observações gerais:
+
+- todas as rotas aceitam `page` e `limit`
+- `municipio` exige `uf`
+- filtros textuais exigem comprimento mínimo quando enviados
+- a resposta foi simplificada para navegação operacional por página, sem depender de contagem total exata em tempo real
+- em bases grandes, essas rotas podem se beneficiar dos scripts SQL documentados em `docs/filter-optimization.md`
+
+### 3. Sócios
+
+Use `GET /api/socios` quando quiser consultar vínculos societários de uma empresa específica.
+
+Essa rota continua exigindo vínculo com um CNPJ.
+
+### 4. Domínios
 
 Use os endpoints de domínio para popular filtros, select boxes, autocomplete e validações de interface.
 
@@ -65,9 +83,9 @@ Esses endpoints aceitam paginação e filtros leves, porque trabalham com tabela
 
 Na experiência pública da API, a preferência é pelo uso do parâmetro `cnpj` sempre que fizer sentido.
 
-Quando uma rota especializada trabalha com a raiz do documento, a API normaliza automaticamente:
+Quando uma rota trabalha com a raiz do documento, a API normaliza automaticamente:
 
 - 8 dígitos: trata como raiz do CNPJ
-- 14 dígitos: extrai a raiz do CNPJ para aplicar a busca especializada
+- 14 dígitos: extrai a raiz do CNPJ para aplicar a busca relacional
 
-O parâmetro `cnpjBasico` continua aceito por compatibilidade, mas não é a forma preferencial para uso público da API.
+O parâmetro `cnpjBasico` continua aceito apenas nas rotas em que ele ainda existe por compatibilidade.

@@ -14,7 +14,7 @@ export async function registerPlugins(app: FastifyInstance) {
         title: "CNPJ API",
         description:
           "API para consulta de dados de CNPJ com foco em consultas controladas e seguras por padrão.",
-        version: "1.0.0",
+        version: process.env.npm_package_version ?? "1.0.0",
       },
       servers: [{ url: "http://localhost:3000", description: "Local" }],
       tags: [
@@ -27,10 +27,10 @@ export async function registerPlugins(app: FastifyInstance) {
           name: "Consulta por CNPJ",
           description: "Consulta consolidada por CNPJ",
         },
-        { name: "Empresas", description: "Consultas de empresas" },
         {
-          name: "Estabelecimentos",
-          description: "Consultas de estabelecimentos",
+          name: "Listas de Empresas",
+          description:
+            "Consultas paginadas de empresas com filtros compostos e uso para prospecção",
         },
         { name: "Sócios", description: "Consultas de sócios" },
         { name: "Domínios", description: "Consultas de tabelas de domínio" },
