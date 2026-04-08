@@ -36,13 +36,17 @@ export class CompanyListRepository {
     return result.rows.map((row) => row.city_code);
   }
 
-  async findByMainCnaeCode(
-    params: CompanyListSearchParams & { mainCnaeCode: string },
+  async findByCnaeCodes(
+    params: CompanyListSearchParams & { cnaeCodes: string[] },
   ) {
-    const values: unknown[] = [params.mainCnaeCode];
-    const filters = [`e.main_cnae_code = $1`];
+    const values: unknown[] = [params.cnaeCodes];
+    const locationFilters: string[] = [];
 
-    this.appendLocationFilters(params, filters, values, "e");
+    this.appendLocationFilters(params, locationFilters, values, "e");
+
+    const locationClause = locationFilters.length
+      ? ` and ${locationFilters.join(" and ")}`
+      : "";
 
     values.push(params.take);
     const takePosition = values.length;
@@ -52,7 +56,7 @@ export class CompanyListRepository {
 
     return this.executeListQuery({
       text: `
-        with filtered_establishments as (
+        with matched_establishments as (
           select
             e.cnpj_full,
             e.cnpj_root,
@@ -63,7 +67,35 @@ export class CompanyListRepository {
             e.registration_status_code,
             e.branch_type_code
           from establishments e
-          where ${filters.join(" and ")}
+          where e.main_cnae_code = any($1)
+          ${locationClause}
+
+          union
+
+          select
+            e.cnpj_full,
+            e.cnpj_root,
+            e.trade_name,
+            e.main_cnae_code,
+            e.state_code,
+            e.city_code,
+            e.registration_status_code,
+            e.branch_type_code
+          from establishments e
+          where string_to_array(coalesce(e.secondary_cnaes_raw, ''), ',') && $1::text[]
+          ${locationClause}
+        ),
+        filtered_establishments as (
+          select
+            e.cnpj_full,
+            e.cnpj_root,
+            e.trade_name,
+            e.main_cnae_code,
+            e.state_code,
+            e.city_code,
+            e.registration_status_code,
+            e.branch_type_code
+          from matched_establishments e
           order by e.cnpj_full asc
           limit $${takePosition}
           offset $${skipPosition}

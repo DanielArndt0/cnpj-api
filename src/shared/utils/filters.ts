@@ -83,3 +83,26 @@ export function normalizeMainCnaeCode(value?: string) {
 
   return normalized;
 }
+
+export function normalizeMainCnaeCodes(value?: string) {
+  const normalized = value
+    ?.split(",")
+    .map((item) => item.replace(/\D/g, ""))
+    .filter(Boolean);
+
+  if (!normalized?.length) {
+    return undefined;
+  }
+
+  const uniqueCodes = Array.from(new Set(normalized));
+
+  for (const code of uniqueCodes) {
+    if (code.length !== 7) {
+      throw new BadRequestError(
+        "codigosCnae deve conter apenas códigos CNAE com exatamente 7 dígitos.",
+      );
+    }
+  }
+
+  return uniqueCodes;
+}

@@ -24,13 +24,17 @@ Use uma das rotas especializadas abaixo quando a intenção for montar segmentos
 
 #### `GET /api/listas/empresas/cnae`
 
-Use quando quiser encontrar empresas por código CNAE principal.
+Use quando quiser encontrar empresas por uma lista de CNAEs relacionados à mesma área de atuação.
 
 Parâmetros principais:
 
-- `codigoCnaePrincipal`
+- `codigosCnae` em formato de lista separada por vírgula
 - `uf` opcional
 - `municipio` opcional, sempre com `uf`
+
+Observação importante:
+
+- a busca considera CNAE principal e CNAEs secundários do estabelecimento
 
 #### `GET /api/listas/empresas/razaosocial`
 

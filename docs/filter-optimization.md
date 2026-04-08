@@ -2,7 +2,7 @@
 
 ## Visão geral
 
-O esquema principal do banco continua consolidado em `SQL/schema.sql`.
+O esquema principal do banco continua consolidado em `sql/schema.sql`.
 
 A organização adicional foi separada por finalidade para reduzir acoplamento entre:
 
@@ -28,23 +28,36 @@ O esquema base já mantém índices operacionais mínimos que fazem sentido como
 
 ## O que foi separado
 
-### `SQL/indices/prospecting-indexes.sql`
+### `sql/indexes/prospecting-indexes.sql`
 
 Índices voltados aos endpoints de prospecção da API:
 
-- busca por CNAE principal;
+- busca por lista de CNAEs, considerando o campo principal e os CNAEs secundários;
 - busca por razão social;
 - busca por sócio;
 - refinamento por UF e município;
 - apoio aos joins usados pelas listas.
 
-### `SQL/manutencao/refresh-planner-statistics.sql`
+### `sql/maintenance/refresh-planner-statistics.sql`
 
 Atualiza as estatísticas do PostgreSQL depois de mudanças grandes na estrutura ou na distribuição dos dados.
 
-### `SQL/diagnostico/explain-analyze-examples.sql`
+### `sql/diagnostics/explain-analyze-examples.sql`
 
 Serve para validar se o banco deixou de usar `Seq Scan` nas tabelas grandes quando a busca é seletiva.
+
+## Estratégia atual para listas por CNAE
+
+A rota `GET /api/listas/empresas/cnae` agora aceita uma lista de códigos CNAE separada por vírgula e aplica a busca em duas frentes:
+
+1. CNAE principal (`main_cnae_code`);
+2. CNAEs secundários armazenados em `secondary_cnaes_raw`.
+
+No banco, a estratégia recomendada combina:
+
+- índice B-tree para o campo principal com refinamento por localização;
+- índice GIN baseado em array para o campo bruto de CNAEs secundários;
+- resolução prévia de município para códigos compatíveis antes da query principal.
 
 ## Views, functions e triggers
 

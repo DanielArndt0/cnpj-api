@@ -30,17 +30,18 @@ const locationQuerystringProperties = {
   },
 } as const;
 
-export const companyListByMainCnaeQuerystringSchema = {
+export const companyListByCnaesQuerystringSchema = {
   ...paginationQuerystringSchema,
   description:
-    "Busca paginada de empresas para prospecção por código CNAE principal. Aceita refinamento opcional por uf e municipio. municipio exige uf.",
-  required: ["codigoCnaePrincipal"],
+    "Busca paginada de empresas para prospecção por uma lista de CNAEs. A busca considera CNAE principal e CNAEs secundários. Aceita refinamento opcional por uf e municipio. municipio exige uf.",
+  required: ["codigosCnae"],
   properties: {
     ...paginationQuerystringSchema.properties,
-    codigoCnaePrincipal: {
+    codigosCnae: {
       type: "string",
-      description: "Código CNAE principal com 7 dígitos.",
-      examples: ["6201501"],
+      description:
+        "Lista de códigos CNAE com 7 dígitos, separada por vírgula. A busca considera CNAE principal e CNAEs secundários.",
+      examples: ["4120400,4211101,4299599"],
     },
     ...locationQuerystringProperties,
   },

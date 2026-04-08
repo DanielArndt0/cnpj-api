@@ -5,7 +5,7 @@ import {
 } from "../../shared/http/pagination.js";
 import {
   normalizeBrazilianStateCode,
-  normalizeMainCnaeCode,
+  normalizeMainCnaeCodes,
   normalizeOptionalText,
   validateMinimumTextLength,
 } from "../../shared/utils/filters.js";
@@ -20,8 +20,8 @@ interface CompanyListLocationQuery {
   municipio?: string;
 }
 
-interface CompanyListByMainCnaeQuery extends CompanyListLocationQuery {
-  codigoCnaePrincipal?: string;
+interface CompanyListByCnaesQuery extends CompanyListLocationQuery {
+  codigosCnae?: string;
 }
 
 interface CompanyListByCompanyNameQuery extends CompanyListLocationQuery {
@@ -40,12 +40,12 @@ interface ResolvedLocationFilters {
 export class CompanyListService {
   constructor(private readonly repository: CompanyListRepository) {}
 
-  async listByMainCnae(query: CompanyListByMainCnaeQuery) {
-    const mainCnaeCode = normalizeMainCnaeCode(query.codigoCnaePrincipal);
+  async listByCnaes(query: CompanyListByCnaesQuery) {
+    const cnaeCodes = normalizeMainCnaeCodes(query.codigosCnae);
 
-    if (!mainCnaeCode) {
+    if (!cnaeCodes?.length) {
       throw new BadRequestError(
-        "codigoCnaePrincipal é obrigatório para a prospecção por CNAE.",
+        "codigosCnae é obrigatório para a prospecção por lista de CNAEs.",
       );
     }
 
@@ -60,8 +60,8 @@ export class CompanyListService {
       });
     }
 
-    const items = await this.repository.findByMainCnaeCode({
-      mainCnaeCode,
+    const items = await this.repository.findByCnaeCodes({
+      cnaeCodes,
       ...locationFilters,
       skip: pagination.skip,
       take: pagination.limit + 1,

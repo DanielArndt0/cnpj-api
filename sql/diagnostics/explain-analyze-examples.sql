@@ -7,9 +7,9 @@
 -- O ideal é observar a troca de Seq Scan por Index Scan, Bitmap Index Scan
 -- ou outro plano mais seletivo nas tabelas grandes.
 
--- 1) Prospecção por CNAE principal
+-- 1) Prospecção por lista de CNAEs (principal + secundários)
 EXPLAIN (ANALYZE, BUFFERS)
-with filtered_establishments as (
+with matched_establishments as (
   select
     e.cnpj_full,
     e.cnpj_root,
@@ -20,8 +20,35 @@ with filtered_establishments as (
     e.registration_status_code,
     e.branch_type_code
   from establishments e
-  where e.main_cnae_code = '6201501'
+  where e.main_cnae_code = any(array['6201501', '4211101'])
     and e.state_code = 'PR'
+
+  union
+
+  select
+    e.cnpj_full,
+    e.cnpj_root,
+    e.trade_name,
+    e.main_cnae_code,
+    e.state_code,
+    e.city_code,
+    e.registration_status_code,
+    e.branch_type_code
+  from establishments e
+  where string_to_array(coalesce(e.secondary_cnaes_raw, ''), ',') && array['6201501', '4211101']
+    and e.state_code = 'PR'
+),
+filtered_establishments as (
+  select
+    e.cnpj_full,
+    e.cnpj_root,
+    e.trade_name,
+    e.main_cnae_code,
+    e.state_code,
+    e.city_code,
+    e.registration_status_code,
+    e.branch_type_code
+  from matched_establishments e
   order by e.cnpj_full asc
   limit 20
   offset 0

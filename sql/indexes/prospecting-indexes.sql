@@ -10,17 +10,27 @@
 -- Observações:
 --   1. Execute estes comandos diretamente no PostgreSQL, fora de transação,
 --      porque CREATE INDEX CONCURRENTLY não pode rodar dentro de BEGIN/COMMIT.
---   2. Crie um índice por vez. A base CNPJ é grande, criar vários índices simultaneamente pode causar contenção e lentidão.
---   3. Após concluir a criação, rode os comandos de ANALYZE do script 'sql/refresh-planner-statistics.sql'.
+--   2. Crie um índice por vez. A base CNPJ é grande, criar vários índices
+--      simultaneamente pode causar contenção e lentidão.
+--   3. Após concluir a criação, rode os comandos de ANALYZE do script
+--      'sql/maintenance/refresh-planner-statistics.sql'.
 
 create extension if not exists pg_trgm;
 
 -- ---------------------------------------------------------
--- Busca de prospecção por CNAE principal, com refinamento por UF e município
+-- Busca de prospecção por lista de CNAEs no campo principal,
+-- com refinamento opcional por UF e município
 -- ---------------------------------------------------------
-create index concurrently if not exists idx_establishments_prospect_cnae_state_city_cnpj
+create index concurrently if not exists idx_establishments_prospect_main_cnaes
 on establishments (main_cnae_code, state_code, city_code, cnpj_full)
 include (cnpj_root, trade_name, registration_status_code, branch_type_code);
+
+-- ---------------------------------------------------------
+-- Busca de prospecção por lista de CNAEs no campo de CNAEs secundários
+-- ---------------------------------------------------------
+create index concurrently if not exists idx_establishments_prospect_secondary_cnaes
+on establishments
+using gin (string_to_array(coalesce(secondary_cnaes_raw, ''), ','));
 
 -- ---------------------------------------------------------
 -- Resolução prévia de município por UF antes da query principal
@@ -41,7 +51,7 @@ create index concurrently if not exists idx_partners_partner_name_trgm
 on partners using gin (lower(partner_name) gin_trgm_ops);
 
 -- ---------------------------------------------------------
--- Apoio ao join/location refinement em listas por razão social e sócio
+-- Apoio ao refinamento por localização nas listas de empresas
 -- ---------------------------------------------------------
 create index concurrently if not exists idx_establishments_root_state_city_cnpj
 on establishments (cnpj_root, state_code, city_code, cnpj_full)

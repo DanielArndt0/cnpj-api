@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import {
   companyListByCompanyNameQuerystringSchema,
-  companyListByMainCnaeQuerystringSchema,
+  companyListByCnaesQuerystringSchema,
   companyListByPartnerNameQuerystringSchema,
   errorEnvelopeSchema,
 } from "../../shared/contracts/api.schemas.js";
@@ -19,16 +19,16 @@ export async function companyListRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ["Listas de Empresas"],
-        summary: "Prospecção de empresas por CNAE principal",
+        summary: "Prospecção de empresas por lista de CNAEs",
         description:
-          "Busca paginada de empresas para prospecção a partir do código CNAE principal, com refinamento opcional por uf e municipio.",
-        querystring: companyListByMainCnaeQuerystringSchema,
+          "Busca paginada de empresas para prospecção a partir de uma lista de CNAEs. A busca considera CNAE principal e CNAEs secundários, com refinamento opcional por uf e municipio.",
+        querystring: companyListByCnaesQuerystringSchema,
         response: {
           400: errorEnvelopeSchema,
         },
       },
     },
-    controller.listByMainCnae,
+    controller.listByCnaes,
   );
 
   app.get(
