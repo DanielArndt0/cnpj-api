@@ -346,9 +346,9 @@ on conflict (code) do update set description = excluded.description;
 
 insert into registration_statuses (code, description) values
   ('01', 'Null'),
-  ('2', 'Active'),
-  ('3', 'Suspended'),
-  ('4', 'Inactive'),
+  ('02', 'Active'),
+  ('03', 'Suspended'),
+  ('04', 'Inactive'),
   ('08', 'Closed')
 on conflict (code) do update set description = excluded.description;
 

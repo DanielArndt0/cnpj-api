@@ -16,6 +16,8 @@ interface CompanyListQueryExecutionParams {
   values: unknown[];
 }
 
+const ACTIVE_REGISTRATION_STATUS_CODE = "02";
+
 export class CompanyListRepository {
   async findCityCodesByStateAndName(params: {
     stateCode: string;
@@ -39,7 +41,10 @@ export class CompanyListRepository {
   async findByCnaeCodes(
     params: CompanyListSearchParams & { cnaeCodes: string[] },
   ) {
-    const values: unknown[] = [params.cnaeCodes];
+    const values: unknown[] = [
+      params.cnaeCodes,
+      ACTIVE_REGISTRATION_STATUS_CODE,
+    ];
     const locationFilters: string[] = [];
 
     this.appendLocationFilters(params, locationFilters, values, "e");
@@ -68,6 +73,7 @@ export class CompanyListRepository {
             e.branch_type_code
           from establishments e
           where e.main_cnae_code = any($1)
+            and e.registration_status_code = $2
           ${locationClause}
 
           union
@@ -83,6 +89,7 @@ export class CompanyListRepository {
             e.branch_type_code
           from establishments e
           where string_to_array(coalesce(e.secondary_cnaes_raw, ''), ',') && $1::text[]
+            and e.registration_status_code = $2
           ${locationClause}
         ),
         filtered_establishments as (
@@ -134,8 +141,14 @@ export class CompanyListRepository {
   async findByCompanyName(
     params: CompanyListSearchParams & { companyName: string },
   ) {
-    const values: unknown[] = [`%${params.companyName.toLowerCase()}%`];
-    const filters = [`lower(c.company_name) like $1`];
+    const values: unknown[] = [
+      `%${params.companyName.toLowerCase()}%`,
+      ACTIVE_REGISTRATION_STATUS_CODE,
+    ];
+    const filters = [
+      `lower(c.company_name) like $1`,
+      `e.registration_status_code = $2`,
+    ];
 
     this.appendLocationFilters(params, filters, values, "e");
 
@@ -200,8 +213,11 @@ export class CompanyListRepository {
   async findByPartnerName(
     params: CompanyListSearchParams & { partnerName: string },
   ) {
-    const values: unknown[] = [`%${params.partnerName.toLowerCase()}%`];
-    const filters: string[] = [];
+    const values: unknown[] = [
+      `%${params.partnerName.toLowerCase()}%`,
+      ACTIVE_REGISTRATION_STATUS_CODE,
+    ];
+    const filters: string[] = [`e.registration_status_code = $2`];
 
     this.appendLocationFilters(params, filters, values, "e");
 
