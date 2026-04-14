@@ -68,6 +68,7 @@ De forma geral, o projeto foi pensado para oferecer uma camada de consulta organ
 
 - `companies`
 - `establishments`
+- `establishment_secondary_cnaes`
 - `partners`
 - `simples_options`
 
@@ -79,9 +80,9 @@ Regras atuais:
 
 - `GET /api/cnpjs/:cnpj`: exige `cnpj` no path e é o endpoint principal para visão consolidada;
 - `GET /api/socios`: exige `cnpj` ou `cnpjBasico` para consultar vínculos societários;
-- `GET /api/listas/empresas/cnae`: exige `codigosCnae` (lista separada por vírgula) e aceita refinamento opcional por `uf` e `municipio`; a busca considera CNAE principal e CNAEs secundários; `municipio` exige `uf`;
-- `GET /api/listas/empresas/razaosocial`: exige `razaoSocial` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`;
-- `GET /api/listas/empresas/socio`: exige `nomeSocio` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`.
+- `GET /api/listas/empresas/cnae`: exige `codigosCnae` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`; a busca considera CNAE principal e CNAEs secundários e retorna apenas estabelecimentos ativos;
+- `GET /api/listas/empresas/razaosocial`: exige `razaoSocial` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`; a resposta retorna apenas estabelecimentos ativos;
+- `GET /api/listas/empresas/socio`: exige `nomeSocio` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`; a resposta retorna apenas estabelecimentos ativos.
 
 As rotas de domínio continuam com paginação e filtros leves para apoio a interfaces e integrações auxiliares.
 

@@ -30,10 +30,9 @@ const locationQuerystringProperties = {
   },
 } as const;
 
-export const companyListByCnaesQuerystringSchema = {
+export const companyListByCnaeQuerystringSchema = {
   ...paginationQuerystringSchema,
-  description:
-    "Busca paginada de empresas para prospecção por uma lista de CNAEs. A busca considera CNAE principal e CNAEs secundários. Aceita refinamento opcional por uf e municipio. municipio exige uf.",
+  description: "Busca paginada de empresas para prospecção por lista de CNAEs.",
   required: ["codigosCnae"],
   properties: {
     ...paginationQuerystringSchema.properties,
@@ -49,8 +48,7 @@ export const companyListByCnaesQuerystringSchema = {
 
 export const companyListByCompanyNameQuerystringSchema = {
   ...paginationQuerystringSchema,
-  description:
-    "Busca paginada de empresas para prospecção por razão social. Aceita refinamento opcional por uf e municipio. municipio exige uf.",
+  description: "Busca paginada de empresas para prospecção por razão social.",
   required: ["razaoSocial"],
   properties: {
     ...paginationQuerystringSchema.properties,
@@ -65,8 +63,7 @@ export const companyListByCompanyNameQuerystringSchema = {
 
 export const companyListByPartnerNameQuerystringSchema = {
   ...paginationQuerystringSchema,
-  description:
-    "Busca paginada de empresas para prospecção por nome de sócio. Aceita refinamento opcional por uf e municipio. municipio exige uf.",
+  description: "Busca paginada de empresas para prospecção por nome de sócio.",
   required: ["nomeSocio"],
   properties: {
     ...paginationQuerystringSchema.properties,

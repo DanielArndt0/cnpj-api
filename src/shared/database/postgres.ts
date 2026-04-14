@@ -8,6 +8,8 @@ const pool = new Pool({
   connectionTimeoutMillis: Number(
     process.env.DATABASE_CONNECTION_TIMEOUT_MS ?? 5000,
   ),
+  query_timeout: Number(process.env.DATABASE_QUERY_TIMEOUT_MS ?? 90000),
+  statement_timeout: Number(process.env.DATABASE_STATEMENT_TIMEOUT_MS ?? 90000),
 });
 
 export async function query<T extends QueryResultRow>(

@@ -6,6 +6,7 @@
 --   principalmente em bases grandes carregadas por lote.
 
 analyze establishments;
+analyze establishment_secondary_cnaes;
 analyze companies;
 analyze partners;
 analyze cities;

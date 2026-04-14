@@ -7,35 +7,22 @@
 -- O ideal é observar a troca de Seq Scan por Index Scan, Bitmap Index Scan
 -- ou outro plano mais seletivo nas tabelas grandes.
 
--- 1) Prospecção por lista de CNAEs (principal + secundários)
+-- 1) Prospecção por lista de CNAEs com CNAE principal e secundário
 EXPLAIN (ANALYZE, BUFFERS)
 with matched_establishments as (
-  select
-    e.cnpj_full,
-    e.cnpj_root,
-    e.trade_name,
-    e.main_cnae_code,
-    e.state_code,
-    e.city_code,
-    e.registration_status_code,
-    e.branch_type_code
+  select e.cnpj_full
   from establishments e
   where e.main_cnae_code = any(array['6201501', '4211101'])
+    and e.registration_status_code = '02'
     and e.state_code = 'PR'
 
   union
 
-  select
-    e.cnpj_full,
-    e.cnpj_root,
-    e.trade_name,
-    e.main_cnae_code,
-    e.state_code,
-    e.city_code,
-    e.registration_status_code,
-    e.branch_type_code
-  from establishments e
-  where string_to_array(coalesce(e.secondary_cnaes_raw, ''), ',') && array['6201501', '4211101']
+  select esc.cnpj_full
+  from establishment_secondary_cnaes esc
+  inner join establishments e on e.cnpj_full = esc.cnpj_full
+  where esc.cnae_code = any(array['6201501', '4211101'])
+    and e.registration_status_code = '02'
     and e.state_code = 'PR'
 ),
 filtered_establishments as (
@@ -48,7 +35,8 @@ filtered_establishments as (
     e.city_code,
     e.registration_status_code,
     e.branch_type_code
-  from matched_establishments e
+  from matched_establishments me
+  inner join establishments e on e.cnpj_full = me.cnpj_full
   order by e.cnpj_full asc
   limit 20
   offset 0
@@ -86,6 +74,7 @@ with filtered_establishments as (
   from companies c
   inner join establishments e on e.cnpj_root = c.cnpj_root
   where lower(c.company_name) like '%tecnologia%'
+    and e.registration_status_code = '02'
     and e.state_code = 'PR'
   order by c.company_name asc, e.cnpj_full asc
   limit 20
@@ -128,7 +117,8 @@ filtered_establishments as (
   from matched_roots mr
   inner join companies c on c.cnpj_root = mr.cnpj_root
   inner join establishments e on e.cnpj_root = mr.cnpj_root
-  where e.state_code = 'PR'
+  where e.registration_status_code = '02'
+    and e.state_code = 'PR'
   order by c.company_name asc, e.cnpj_full asc
   limit 20
   offset 0

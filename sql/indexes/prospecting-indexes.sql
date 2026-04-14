@@ -7,17 +7,13 @@
 --   - GET /api/listas/empresas/razaosocial
 --   - GET /api/listas/empresas/socio
 --
--- Regra de negócio:
---   Todas as listas de prospecção devem retornar apenas
---   estabelecimentos ativos (registration_status_code = '02').
---
 -- Observações:
 --   1. Execute estes comandos diretamente no PostgreSQL, fora de transação,
 --      porque CREATE INDEX CONCURRENTLY não pode rodar dentro de BEGIN/COMMIT.
---   2. Crie um índice por vez. A base CNPJ é grande, então criar vários
---      índices simultaneamente pode causar contenção e lentidão.
+--   2. Crie um índice por vez. A base CNPJ é grande, criar vários índices
+--      simultaneamente pode causar contenção e lentidão.
 --   3. Após concluir a criação, rode os comandos de ANALYZE do script
---      de manutenção de estatísticas do planner.
+--      'sql/maintenance/refresh-planner-statistics.sql'.
 
 create extension if not exists pg_trgm;
 
@@ -26,26 +22,27 @@ create extension if not exists pg_trgm;
 -- apenas para estabelecimentos ativos, com refinamento opcional
 -- por UF e município
 -- ---------------------------------------------------------
-create index concurrently if not exists idx_establishments_active_prospect_main_cnaes
+create index concurrently if not exists idx_establishments_active_main_cnaes
 on establishments (main_cnae_code, state_code, city_code, cnpj_full)
-include (cnpj_root, trade_name, registration_status_code, branch_type_code)
+include (cnpj_root, trade_name, branch_type_code)
 where registration_status_code = '02';
 
 -- ---------------------------------------------------------
--- Busca de prospecção por lista de CNAEs no campo de CNAEs secundários,
--- apenas para estabelecimentos ativos
+-- Busca de prospecção por lista de CNAEs secundários a partir da
+-- tabela relacional de apoio por estabelecimento
 -- ---------------------------------------------------------
-create index concurrently if not exists idx_establishments_active_prospect_secondary_cnaes
-on establishments
-using gin (string_to_array(coalesce(secondary_cnaes_raw, ''), ','))
-where registration_status_code = '02';
+create index concurrently if not exists idx_establishment_secondary_cnaes_cnae_code_cnpj_full
+on establishment_secondary_cnaes (cnae_code, cnpj_full);
+
+create index concurrently if not exists idx_establishment_secondary_cnaes_cnpj_full
+on establishment_secondary_cnaes (cnpj_full);
 
 -- ---------------------------------------------------------
 -- Resolução prévia de município por UF antes da query principal,
--- apenas para estabelecimentos ativos
+-- considerando apenas estabelecimentos ativos
 -- ---------------------------------------------------------
-create index concurrently if not exists idx_establishments_active_state_city
-on establishments (state_code, city_code)
+create index concurrently if not exists idx_establishments_active_state_city_cnpj
+on establishments (state_code, city_code, cnpj_full)
 where registration_status_code = '02';
 
 -- ---------------------------------------------------------
@@ -61,10 +58,10 @@ create index concurrently if not exists idx_partners_partner_name_trgm
 on partners using gin (lower(partner_name) gin_trgm_ops);
 
 -- ---------------------------------------------------------
--- Apoio ao refinamento por localização e paginação das listas
--- de empresas já filtradas como ativas
+-- Apoio ao refinamento por localização nas listas de empresas
+-- por razão social e sócio, considerando apenas ativos
 -- ---------------------------------------------------------
 create index concurrently if not exists idx_establishments_active_root_state_city_cnpj
 on establishments (cnpj_root, state_code, city_code, cnpj_full)
-include (trade_name, main_cnae_code, registration_status_code, branch_type_code)
+include (trade_name, main_cnae_code, branch_type_code)
 where registration_status_code = '02';

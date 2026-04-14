@@ -45,12 +45,12 @@ Aceita refinamento opcional com:
 
 Observações:
 
-- a rota foi pensada para prospecção por atividade econômica em múltiplos CNAEs
-- `codigosCnae` deve ser enviado como lista separada por vírgula
-- a busca considera tanto o CNAE principal quanto os CNAEs secundários do estabelecimento
+- a rota foi pensada para prospecção por atividade econômica em lista de CNAEs
 - `municipio` exige `uf` para reduzir ambiguidades
 - quando `municipio` é informado, a API resolve primeiro os códigos compatíveis antes da consulta principal
 - a paginação continua disponível por `page` e `limit`
+- a busca considera CNAE principal e CNAEs secundários
+- a resposta retorna apenas estabelecimentos ativos
 
 ### `GET /api/listas/empresas/razaosocial`
 
@@ -68,6 +68,7 @@ Observações:
 - a rota foi pensada para prospecção por nome empresarial
 - `municipio` exige `uf` para reduzir ambiguidades
 - filtros textuais exigem no mínimo **3 caracteres úteis**
+- a resposta retorna apenas estabelecimentos ativos
 - o filtro textual principal foi isolado da montagem final dos dados para reduzir custo nas tabelas grandes
 
 ### `GET /api/listas/empresas/socio`
@@ -87,6 +88,7 @@ Observações:
 - `municipio` exige `uf` para reduzir ambiguidades
 - filtros textuais exigem no mínimo **3 caracteres úteis**
 - a busca textual de sócio é resolvida primeiro em `partners` e só depois materializa os estabelecimentos
+- a resposta retorna apenas estabelecimentos ativos
 
 ## Rotas de domínio
 

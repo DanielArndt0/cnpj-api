@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import {
   companyListByCompanyNameQuerystringSchema,
-  companyListByCnaesQuerystringSchema,
+  companyListByCnaeQuerystringSchema,
   companyListByPartnerNameQuerystringSchema,
   errorEnvelopeSchema,
 } from "../../shared/contracts/api.schemas.js";
@@ -21,14 +21,14 @@ export async function companyListRoutes(app: FastifyInstance) {
         tags: ["Listas de Empresas"],
         summary: "Prospecção de empresas por lista de CNAEs",
         description:
-          "Busca paginada de empresas para prospecção a partir de uma lista de CNAEs. A busca considera CNAE principal e CNAEs secundários, com refinamento opcional por uf e municipio.",
-        querystring: companyListByCnaesQuerystringSchema,
+          "Busca paginada de empresas para prospecção a partir de uma lista de CNAEs. A busca considera CNAE principal e CNAEs secundários, retorna apenas estabelecimentos ativos e aceita refinamento opcional por uf e municipio.",
+        querystring: companyListByCnaeQuerystringSchema,
         response: {
           400: errorEnvelopeSchema,
         },
       },
     },
-    controller.listByCnaes,
+    controller.listByCnae,
   );
 
   app.get(
@@ -38,7 +38,7 @@ export async function companyListRoutes(app: FastifyInstance) {
         tags: ["Listas de Empresas"],
         summary: "Prospecção de empresas por razão social",
         description:
-          "Busca paginada de empresas para prospecção a partir da razão social, com refinamento opcional por uf e municipio.",
+          "Busca paginada de empresas para prospecção a partir da razão social, retornando apenas estabelecimentos ativos e aceitando refinamento opcional por uf e municipio.",
         querystring: companyListByCompanyNameQuerystringSchema,
         response: {
           400: errorEnvelopeSchema,
@@ -55,7 +55,7 @@ export async function companyListRoutes(app: FastifyInstance) {
         tags: ["Listas de Empresas"],
         summary: "Prospecção de empresas por sócio",
         description:
-          "Busca paginada de empresas para prospecção a partir do nome do sócio, com refinamento opcional por uf e municipio.",
+          "Busca paginada de empresas para prospecção a partir do nome do sócio, retornando apenas estabelecimentos ativos e aceitando refinamento opcional por uf e municipio.",
         querystring: companyListByPartnerNameQuerystringSchema,
         response: {
           400: errorEnvelopeSchema,

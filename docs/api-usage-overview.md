@@ -24,17 +24,15 @@ Use uma das rotas especializadas abaixo quando a intenção for montar segmentos
 
 #### `GET /api/listas/empresas/cnae`
 
-Use quando quiser encontrar empresas por uma lista de CNAEs relacionados à mesma área de atuação.
+Use quando quiser encontrar empresas por uma lista de CNAEs, considerando CNAE principal e CNAEs secundários.
 
 Parâmetros principais:
 
-- `codigosCnae` em formato de lista separada por vírgula
+- `codigosCnae`
 - `uf` opcional
 - `municipio` opcional, sempre com `uf`
 
-Observação importante:
-
-- a busca considera CNAE principal e CNAEs secundários do estabelecimento
+A resposta retorna apenas estabelecimentos ativos.
 
 #### `GET /api/listas/empresas/razaosocial`
 
@@ -46,6 +44,8 @@ Parâmetros principais:
 - `uf` opcional
 - `municipio` opcional, sempre com `uf`
 
+A resposta retorna apenas estabelecimentos ativos.
+
 #### `GET /api/listas/empresas/socio`
 
 Use quando quiser encontrar empresas por nome de sócio.
@@ -56,10 +56,13 @@ Parâmetros principais:
 - `uf` opcional
 - `municipio` opcional, sempre com `uf`
 
+A resposta retorna apenas estabelecimentos ativos.
+
 Observações gerais:
 
 - todas as rotas aceitam `page` e `limit`
 - `municipio` exige `uf`
+- as listas retornam apenas estabelecimentos ativos
 - filtros textuais exigem comprimento mínimo quando enviados
 - a resposta foi simplificada para navegação operacional por página, sem depender de contagem total exata em tempo real
 - em bases grandes, essas rotas podem se beneficiar dos scripts SQL documentados em `docs/filter-optimization.md`

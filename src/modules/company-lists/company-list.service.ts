@@ -5,7 +5,7 @@ import {
 } from "../../shared/http/pagination.js";
 import {
   normalizeBrazilianStateCode,
-  normalizeMainCnaeCodes,
+  normalizeCnaeCodeList,
   normalizeOptionalText,
   validateMinimumTextLength,
 } from "../../shared/utils/filters.js";
@@ -20,7 +20,7 @@ interface CompanyListLocationQuery {
   municipio?: string;
 }
 
-interface CompanyListByCnaesQuery extends CompanyListLocationQuery {
+interface CompanyListByCnaeQuery extends CompanyListLocationQuery {
   codigosCnae?: string;
 }
 
@@ -40,8 +40,8 @@ interface ResolvedLocationFilters {
 export class CompanyListService {
   constructor(private readonly repository: CompanyListRepository) {}
 
-  async listByCnaes(query: CompanyListByCnaesQuery) {
-    const cnaeCodes = normalizeMainCnaeCodes(query.codigosCnae);
+  async listByCnae(query: CompanyListByCnaeQuery) {
+    const cnaeCodes = normalizeCnaeCodeList(query.codigosCnae);
 
     if (!cnaeCodes?.length) {
       throw new BadRequestError(

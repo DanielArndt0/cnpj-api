@@ -45,13 +45,17 @@ export class CompanyListRepository {
       params.cnaeCodes,
       ACTIVE_REGISTRATION_STATUS_CODE,
     ];
-    const locationFilters: string[] = [];
+    const mainCnaeFilters = [
+      `e.main_cnae_code = any($1)`,
+      `e.registration_status_code = $2`,
+    ];
+    const secondaryCnaeFilters = [
+      `esc.cnae_code = any($1)`,
+      `e.registration_status_code = $2`,
+    ];
 
-    this.appendLocationFilters(params, locationFilters, values, "e");
-
-    const locationClause = locationFilters.length
-      ? ` and ${locationFilters.join(" and ")}`
-      : "";
+    this.appendLocationFilters(params, mainCnaeFilters, values, "e");
+    this.appendLocationFilters(params, secondaryCnaeFilters, values, "e");
 
     values.push(params.take);
     const takePosition = values.length;
@@ -62,35 +66,16 @@ export class CompanyListRepository {
     return this.executeListQuery({
       text: `
         with matched_establishments as (
-          select
-            e.cnpj_full,
-            e.cnpj_root,
-            e.trade_name,
-            e.main_cnae_code,
-            e.state_code,
-            e.city_code,
-            e.registration_status_code,
-            e.branch_type_code
+          select e.cnpj_full
           from establishments e
-          where e.main_cnae_code = any($1)
-            and e.registration_status_code = $2
-          ${locationClause}
+          where ${mainCnaeFilters.join(" and ")}
 
           union
 
-          select
-            e.cnpj_full,
-            e.cnpj_root,
-            e.trade_name,
-            e.main_cnae_code,
-            e.state_code,
-            e.city_code,
-            e.registration_status_code,
-            e.branch_type_code
-          from establishments e
-          where string_to_array(coalesce(e.secondary_cnaes_raw, ''), ',') && $1::text[]
-            and e.registration_status_code = $2
-          ${locationClause}
+          select esc.cnpj_full
+          from establishment_secondary_cnaes esc
+          inner join establishments e on e.cnpj_full = esc.cnpj_full
+          where ${secondaryCnaeFilters.join(" and ")}
         ),
         filtered_establishments as (
           select
@@ -102,7 +87,8 @@ export class CompanyListRepository {
             e.city_code,
             e.registration_status_code,
             e.branch_type_code
-          from matched_establishments e
+          from matched_establishments me
+          inner join establishments e on e.cnpj_full = me.cnpj_full
           order by e.cnpj_full asc
           limit $${takePosition}
           offset $${skipPosition}
@@ -227,7 +213,7 @@ export class CompanyListRepository {
     values.push(params.skip);
     const skipPosition = values.length;
 
-    const whereClause = filters.length ? `where ${filters.join(" and ")}` : "";
+    const whereClause = `where ${filters.join(" and ")}`;
 
     return this.executeListQuery({
       text: `

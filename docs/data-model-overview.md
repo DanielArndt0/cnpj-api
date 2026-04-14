@@ -30,6 +30,14 @@ O estabelecimento representa uma unidade cadastral específica vinculada a uma e
 
 Em termos práticos, o estabelecimento é a melhor referência para filtros operacionais e segmentações por localização ou atividade.
 
+## CNAEs secundários por estabelecimento
+
+A estrutura `establishment_secondary_cnaes` representa a relação entre um estabelecimento e seus CNAEs secundários.
+
+Ela existe para evitar consultas pesadas em tempo real sobre o campo bruto `secondary_cnaes_raw` e permitir prospecção mais eficiente por atividade econômica secundária.
+
+Em termos práticos, ela ajuda principalmente as listas de empresas por CNAE, sem substituir o campo original mantido em `establishments`.
+
 ## Sócio
 
 O sócio representa o vínculo societário associado à empresa.

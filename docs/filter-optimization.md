@@ -32,46 +32,26 @@ O esquema base já mantém índices operacionais mínimos que fazem sentido como
 
 Índices voltados aos endpoints de prospecção da API:
 
-- busca por lista de CNAEs, considerando o campo principal e os CNAEs secundários;
+- busca por lista de CNAEs considerando CNAE principal e CNAEs secundários;
 - busca por razão social;
 - busca por sócio;
 - refinamento por UF e município;
 - apoio aos joins usados pelas listas.
+- tabela relacional auxiliar para CNAEs secundários por estabelecimento.
 
 ### `sql/maintenance/refresh-planner-statistics.sql`
 
 Atualiza as estatísticas do PostgreSQL depois de mudanças grandes na estrutura ou na distribuição dos dados.
 
+### `sql/data/backfill-establishment-secondary-cnaes.sql`
+
+Executa o backfill inicial da tabela relacional de CNAEs secundários por estabelecimento a partir do campo bruto `secondary_cnaes_raw`.
+
 ### `sql/diagnostics/explain-analyze-examples.sql`
 
 Serve para validar se o banco deixou de usar `Seq Scan` nas tabelas grandes quando a busca é seletiva.
 
-## Estratégia atual para listas por CNAE
+## Backfill de CNAEs secundários
 
-A rota `GET /api/listas/empresas/cnae` agora aceita uma lista de códigos CNAE separada por vírgula e aplica a busca em duas frentes:
+Quando a tabela `establishment_secondary_cnaes` ainda não estiver populada, a recomendação é executar um backfill controlado a partir de `establishments.secondary_cnaes_raw` e, depois, atualizar o fluxo do loader para popular essa estrutura no processo normal de carga.
 
-1. CNAE principal (`main_cnae_code`);
-2. CNAEs secundários armazenados em `secondary_cnaes_raw`.
-
-No banco, a estratégia recomendada combina:
-
-- índice B-tree para o campo principal com refinamento por localização;
-- índice GIN baseado em array para o campo bruto de CNAEs secundários;
-- resolução prévia de município para códigos compatíveis antes da query principal.
-
-## Views, functions e triggers
-
-Não foram criadas views, functions ou triggers novas nesta etapa.
-
-Motivo:
-
-- view comum não melhora desempenho por si só;
-- function/procedure não corrige plano ruim automaticamente;
-- trigger adicionaria custo de manutenção e não resolve o gargalo principal;
-- o problema identificado foi de índice e plano de execução.
-
-Se no futuro a prospecção virar um fluxo muito central, aí pode fazer sentido avaliar:
-
-- materialized views;
-- tabelas desnormalizadas para leitura;
-- rotinas controladas de refresh.

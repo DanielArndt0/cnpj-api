@@ -4,7 +4,7 @@ import { CompanyListService } from "./company-list.service.js";
 export class CompanyListController {
   constructor(private readonly service: CompanyListService) {}
 
-  listByCnaes = async (
+  listByCnae = async (
     request: FastifyRequest<{
       Querystring: {
         page?: string;
@@ -16,7 +16,7 @@ export class CompanyListController {
     }>,
     reply: FastifyReply,
   ) => {
-    const result = await this.service.listByCnaes(request.query);
+    const result = await this.service.listByCnae(request.query);
 
     return reply.send({
       sucesso: true,

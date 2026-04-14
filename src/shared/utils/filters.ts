@@ -84,7 +84,7 @@ export function normalizeMainCnaeCode(value?: string) {
   return normalized;
 }
 
-export function normalizeMainCnaeCodes(value?: string) {
+export function normalizeCnaeCodeList(value?: string) {
   const normalized = value
     ?.split(",")
     .map((item) => item.replace(/\D/g, ""))
@@ -94,7 +94,7 @@ export function normalizeMainCnaeCodes(value?: string) {
     return undefined;
   }
 
-  const uniqueCodes = Array.from(new Set(normalized));
+  const uniqueCodes = [...new Set(normalized)];
 
   for (const code of uniqueCodes) {
     if (code.length !== 7) {

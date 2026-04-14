@@ -126,6 +126,14 @@ create table if not exists establishments (
   primary key (cnpj_full)
 );
 
+create table if not exists establishment_secondary_cnaes (
+  cnpj_full text not null,
+  cnae_code text not null,
+  created_at timestamp without time zone not null default now(),
+  updated_at timestamp without time zone not null default now(),
+  primary key (cnpj_full, cnae_code)
+);
+
 create table if not exists partners (
   id bigserial primary key,
   cnpj_root text not null,
