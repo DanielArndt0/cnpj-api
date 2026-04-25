@@ -54,4 +54,3 @@ Serve para validar se o banco deixou de usar `Seq Scan` nas tabelas grandes quan
 ## Backfill de CNAEs secundários
 
 Quando a tabela `establishment_secondary_cnaes` ainda não estiver populada, a recomendação é executar um backfill controlado a partir de `establishments.secondary_cnaes_raw` e, depois, atualizar o fluxo do loader para popular essa estrutura no processo normal de carga.
-
