@@ -15,4 +15,18 @@ export interface CompanyListRow {
   legal_nature_description: string | null;
   company_size_code: string;
   company_size_description: string | null;
+  city_code: string | null;
+  street_type: string | null;
+  street_name: string | null;
+  street_number: string | null;
+  address_complement: string | null;
+  district: string | null;
+  postal_code: string | null;
+  phone_area_code_1: string | null;
+  phone_number_1: string | null;
+  phone_area_code_2: string | null;
+  phone_number_2: string | null;
+  fax_area_code: string | null;
+  fax_number: string | null;
+  email: string | null;
 }

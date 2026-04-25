@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import packageJson from "../../package.json" with { type: "json" };
 
 export async function rootRoutes(app: FastifyInstance) {
   app.get(
@@ -12,8 +13,8 @@ export async function rootRoutes(app: FastifyInstance) {
     async () => ({
       sucesso: true,
       dados: {
-        nome: "cnpj-api",
-        versao: "1.0.0",
+        nome: packageJson.name,
+        versao: packageJson.version,
         status: "running",
         documentacao: "/docs",
       },

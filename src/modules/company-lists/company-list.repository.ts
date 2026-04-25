@@ -86,7 +86,20 @@ export class CompanyListRepository {
             e.state_code,
             e.city_code,
             e.registration_status_code,
-            e.branch_type_code
+            e.branch_type_code,
+            e.street_type,
+            e.street_name,
+            e.street_number,
+            e.address_complement,
+            e.district,
+            e.postal_code,
+            e.phone_area_code_1,
+            e.phone_number_1,
+            e.phone_area_code_2,
+            e.phone_number_2,
+            e.fax_area_code,
+            e.fax_number,
+            e.email
           from matched_establishments me
           inner join establishments e on e.cnpj_full = me.cnpj_full
           order by e.cnpj_full asc
@@ -101,6 +114,7 @@ export class CompanyListRepository {
           e.main_cnae_code,
           cn.description as main_cnae_description,
           e.state_code,
+          e.city_code,
           ci.description as city_description,
           e.registration_status_code,
           rs.description as registration_status_description,
@@ -109,7 +123,20 @@ export class CompanyListRepository {
           c.legal_nature_code,
           ln.description as legal_nature_description,
           c.company_size_code,
-          cs.description as company_size_description
+          cs.description as company_size_description,
+          e.street_type,
+          e.street_name,
+          e.street_number,
+          e.address_complement,
+          e.district,
+          e.postal_code,
+          e.phone_area_code_1,
+          e.phone_number_1,
+          e.phone_area_code_2,
+          e.phone_number_2,
+          e.fax_area_code,
+          e.fax_number,
+          e.email
         from filtered_establishments e
         inner join companies c on c.cnpj_root = e.cnpj_root
         left join cnaes cn on cn.code = e.main_cnae_code
@@ -158,7 +185,20 @@ export class CompanyListRepository {
             e.registration_status_code,
             e.branch_type_code,
             c.legal_nature_code,
-            c.company_size_code
+            c.company_size_code,
+            e.street_type,
+            e.street_name,
+            e.street_number,
+            e.address_complement,
+            e.district,
+            e.postal_code,
+            e.phone_area_code_1,
+            e.phone_number_1,
+            e.phone_area_code_2,
+            e.phone_number_2,
+            e.fax_area_code,
+            e.fax_number,
+            e.email
           from companies c
           inner join establishments e on e.cnpj_root = c.cnpj_root
           where ${filters.join(" and ")}
@@ -174,6 +214,7 @@ export class CompanyListRepository {
           e.main_cnae_code,
           cn.description as main_cnae_description,
           e.state_code,
+          e.city_code,
           ci.description as city_description,
           e.registration_status_code,
           rs.description as registration_status_description,
@@ -182,7 +223,20 @@ export class CompanyListRepository {
           e.legal_nature_code,
           ln.description as legal_nature_description,
           e.company_size_code,
-          cs.description as company_size_description
+          cs.description as company_size_description,
+          e.street_type,
+          e.street_name,
+          e.street_number,
+          e.address_complement,
+          e.district,
+          e.postal_code,
+          e.phone_area_code_1,
+          e.phone_number_1,
+          e.phone_area_code_2,
+          e.phone_number_2,
+          e.fax_area_code,
+          e.fax_number,
+          e.email
         from filtered_establishments e
         left join cnaes cn on cn.code = e.main_cnae_code
         left join cities ci on ci.code = e.city_code
@@ -234,7 +288,20 @@ export class CompanyListRepository {
             e.registration_status_code,
             e.branch_type_code,
             c.legal_nature_code,
-            c.company_size_code
+            c.company_size_code,
+            e.street_type,
+            e.street_name,
+            e.street_number,
+            e.address_complement,
+            e.district,
+            e.postal_code,
+            e.phone_area_code_1,
+            e.phone_number_1,
+            e.phone_area_code_2,
+            e.phone_number_2,
+            e.fax_area_code,
+            e.fax_number,
+            e.email
           from matched_roots mr
           inner join companies c on c.cnpj_root = mr.cnpj_root
           inner join establishments e on e.cnpj_root = mr.cnpj_root
@@ -251,6 +318,7 @@ export class CompanyListRepository {
           e.main_cnae_code,
           cn.description as main_cnae_description,
           e.state_code,
+          e.city_code,
           ci.description as city_description,
           e.registration_status_code,
           rs.description as registration_status_description,
@@ -259,7 +327,20 @@ export class CompanyListRepository {
           e.legal_nature_code,
           ln.description as legal_nature_description,
           e.company_size_code,
-          cs.description as company_size_description
+          cs.description as company_size_description,
+          e.street_type,
+          e.street_name,
+          e.street_number,
+          e.address_complement,
+          e.district,
+          e.postal_code,
+          e.phone_area_code_1,
+          e.phone_number_1,
+          e.phone_area_code_2,
+          e.phone_number_2,
+          e.fax_area_code,
+          e.fax_number,
+          e.email
         from filtered_establishments e
         left join cnaes cn on cn.code = e.main_cnae_code
         left join cities ci on ci.code = e.city_code
