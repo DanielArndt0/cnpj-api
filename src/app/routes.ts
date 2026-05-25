@@ -5,6 +5,7 @@ import { companyListRoutes } from "../modules/company-lists/company-list.routes.
 import { partnerRoutes } from "../modules/partners/partner.routes.js";
 import { domainRoutes } from "../modules/domains/domain.routes.js";
 import { healthRoutes } from "../modules/health/health.routes.js";
+import { infoRoutes } from "../modules/infos/info.routes.js";
 
 export async function registerRoutes(app: FastifyInstance) {
   await app.register(rootRoutes);
@@ -13,4 +14,5 @@ export async function registerRoutes(app: FastifyInstance) {
   await app.register(companyListRoutes, { prefix: "/api" });
   await app.register(partnerRoutes, { prefix: "/api" });
   await app.register(domainRoutes, { prefix: "/api" });
+  await app.register(infoRoutes, { prefix: "/api" });
 }

@@ -1,7 +1,7 @@
 import { query } from "../../shared/database/postgres.js";
 import { DOMAIN_DEFINITIONS } from "./domain.catalog.js";
 
-interface DomainRow {
+export interface DomainRow {
   code: string;
   description: string;
 }

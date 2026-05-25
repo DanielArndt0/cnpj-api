@@ -2,7 +2,7 @@
 
 ## Qual endpoint usar
 
-A API foi organizada em quatro grupos principais de consulta.
+A API foi organizada em cinco grupos principais de consulta.
 
 ### 1. Consulta principal por CNPJ
 
@@ -85,6 +85,34 @@ Exemplos:
 - `GET /api/dominios/naturezas-juridicas`
 
 Esses endpoints aceitam paginação e filtros leves, porque trabalham com tabelas auxiliares menores do que as tabelas operacionais.
+
+### 5. Informações e indicadores
+
+Use os endpoints de `/api/infos` quando a aplicação precisar exibir números prontos, cards de landing page ou relatórios simples sem montar consultas manualmente.
+
+Exemplos:
+
+- `GET /api/infos/empresas/ativas/resumo`
+- `GET /api/infos/empresas/ativas/total`
+- `GET /api/infos/empresas/ativas/por-uf`
+- `GET /api/infos/empresas/ativas/por-regiao`
+- `GET /api/infos/empresas/ativas/por-porte`
+- `GET /api/infos/empresas/ativas/por-cnae-principal`
+- `GET /api/infos/empresas/ativas/por-municipio`
+
+Esses endpoints possuem cache em memória configurável por `INFO_CACHE_TTL_SECONDS`, porque são pensados para leituras públicas e repetidas.
+
+## Consumo por frontends e CORS
+
+Para consumir a API em navegadores, cadastre as origens permitidas na variável `CORS_ORIGINS` do `.env`.
+
+Exemplo:
+
+```env
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001,https://app.seudominio.com.br
+```
+
+A lista deve ser separada por vírgula. Se a variável não for informada, a API mantém CORS desabilitado para origens externas por segurança.
 
 ## Observação sobre CNPJ e CNPJ básico
 

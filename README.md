@@ -44,7 +44,8 @@ De forma geral, o projeto foi pensado para oferecer uma camada de consulta organ
 
 - consultar informações por CNPJ;
 - acessar dados consolidados por CNPJ, listas de empresas e vínculos societários;
-- consultar tabelas auxiliares e domínios separadamente, com paginação e filtros leves;
+- consultar tabelas auxiliares e domínios separadamente, com endpoints explícitos, paginação e filtros leves;
+- expor endpoints informativos para indicadores públicos, cards de landing page e relatórios simples;
 - separar com clareza a aplicação de leitura da aplicação de carga;
 - servir de base para integrações, sistemas internos, dashboards e automações.
 
@@ -84,7 +85,9 @@ Regras atuais:
 - `GET /api/listas/empresas/razaosocial`: exige `razaoSocial` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`; a resposta retorna apenas estabelecimentos ativos;
 - `GET /api/listas/empresas/socio`: exige `nomeSocio` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`; a resposta retorna apenas estabelecimentos ativos.
 
-As rotas de domínio continuam com paginação e filtros leves para apoio a interfaces e integrações auxiliares.
+As rotas de domínio possuem endpoints explícitos por domínio e continuam com paginação e filtros leves para apoio a interfaces e integrações auxiliares.
+
+As rotas informativas ficam em `/api/infos` e expõem indicadores prontos para consumo, como total de CNPJs ativos, ativos por UF, ativos por região, ativos por porte, ativos por CNAE principal e ativos por município.
 
 ## Documentação adicional
 
@@ -94,6 +97,7 @@ Arquivos complementares foram adicionados em [`/docs`](./docs):
 - [`Visão geral de uso da API`](./docs/api-usage-overview.md)
 - [`Visão geral do modelo de dados`](./docs/data-model-overview.md)
 - [`Referência de domínio`](./docs/domain-reference.md)
+- [`Endpoints informativos`](./docs/info-endpoints.md)
 
 ## Observação importante
 
@@ -116,6 +120,24 @@ Execute em modo de produção:
 npm run build
 npm start
 ```
+
+## Configuração de CORS
+
+A lista de origens autorizadas para consumo da API em navegadores fica no `.env`, por meio da variável `CORS_ORIGINS`.
+
+Exemplo para desenvolvimento local:
+
+```env
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3010
+```
+
+Exemplo para produção:
+
+```env
+CORS_ORIGINS=https://seudominio.com.br,https://app.seudominio.com.br
+```
+
+Quando `CORS_ORIGINS` estiver vazia ou ausente, a API não libera CORS para origens externas. O valor `*` também é aceito, mas deve ser usado apenas em ambiente controlado, porque libera qualquer origem.
 
 ## Scripts úteis
 

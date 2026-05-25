@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { DomainService } from "./domain.service.js";
+import { DomainService, type DomainListQuery } from "./domain.service.js";
 
 export class DomainController {
   constructor(private readonly service: DomainService) {}
@@ -15,38 +15,38 @@ export class DomainController {
     });
   };
 
-  list = async (
-    request: FastifyRequest<{
-      Params: { domain: string };
-      Querystring: { page?: string; limit?: string; q?: string; code?: string };
-    }>,
-    reply: FastifyReply,
-  ) => {
-    const result = await this.service.list(
-      request.params.domain,
-      request.query,
-    );
+  listBySlug(domainSlug: string) {
+    return async (
+      request: FastifyRequest<{
+        Querystring: DomainListQuery;
+      }>,
+      reply: FastifyReply,
+    ) => {
+      const result = await this.service.list(domainSlug, request.query);
 
-    return reply.send({
-      sucesso: true,
-      dados: result,
-    });
-  };
+      return reply.send({
+        sucesso: true,
+        dados: result,
+      });
+    };
+  }
 
-  findByCode = async (
-    request: FastifyRequest<{
-      Params: { domain: string; code: string };
-    }>,
-    reply: FastifyReply,
-  ) => {
-    const result = await this.service.findByCode(
-      request.params.domain,
-      request.params.code,
-    );
+  findBySlugAndCode(domainSlug: string) {
+    return async (
+      request: FastifyRequest<{
+        Params: { codigo: string };
+      }>,
+      reply: FastifyReply,
+    ) => {
+      const result = await this.service.findByCode(
+        domainSlug,
+        request.params.codigo,
+      );
 
-    return reply.send({
-      sucesso: true,
-      dados: result,
-    });
-  };
+      return reply.send({
+        sucesso: true,
+        dados: result,
+      });
+    };
+  }
 }

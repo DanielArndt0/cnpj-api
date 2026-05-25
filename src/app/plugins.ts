@@ -2,10 +2,11 @@ import type { FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
+import { parseCorsOrigins } from "../shared/config/cors.js";
 
 export async function registerPlugins(app: FastifyInstance) {
   await app.register(cors, {
-    origin: false,
+    origin: parseCorsOrigins(),
   });
 
   await app.register(swagger, {
@@ -34,6 +35,11 @@ export async function registerPlugins(app: FastifyInstance) {
         },
         { name: "Sócios", description: "Consultas de sócios" },
         { name: "Domínios", description: "Consultas de tabelas de domínio" },
+        {
+          name: "Informações",
+          description:
+            "Indicadores e relatórios simples para dashboards, landing pages e integrações",
+        },
       ],
     },
   });

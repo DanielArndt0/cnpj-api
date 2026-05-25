@@ -9,6 +9,7 @@ A organização adicional foi separada por finalidade para reduzir acoplamento e
 - criação estrutural do banco;
 - carga massiva do CNPJ DB Loader;
 - índices avançados voltados para leitura da CNPJ API;
+- índices específicos para endpoints informativos e relatórios simples;
 - manutenção das estatísticas do planner;
 - diagnóstico com `EXPLAIN (ANALYZE, BUFFERS)`.
 
@@ -38,6 +39,18 @@ O esquema base já mantém índices operacionais mínimos que fazem sentido como
 - refinamento por UF e município;
 - apoio aos joins usados pelas listas.
 - tabela relacional auxiliar para CNAEs secundários por estabelecimento.
+
+### `sql/indexes/info-report-indexes.sql`
+
+Índices recomendados para os endpoints informativos de `/api/infos`:
+
+- totalização de CNPJs ativos;
+- agrupamento por UF e município;
+- agrupamento por região brasileira;
+- ranking por CNAE principal;
+- agrupamento por porte da empresa.
+
+Esses índices não alteram o modelo de dados. Eles apenas adicionam estruturas auxiliares para leitura em bases grandes.
 
 ### `sql/maintenance/refresh-planner-statistics.sql`
 

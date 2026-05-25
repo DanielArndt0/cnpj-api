@@ -96,39 +96,15 @@ export const partnerQuerystringSchema = {
   },
 } as const;
 
-export const domainParamsSchema = {
-  type: "object",
-  required: ["domain"],
-  properties: {
-    domain: {
-      type: "string",
-      description: "Tipo de domínio consultado.",
-      examples: [
-        "cnaes",
-        "cidades",
-        "paises",
-        "qualificacoes-de-socios",
-        "naturezas-juridicas",
-        "motivos-cadastrais",
-        "portes",
-        "tipos-de-estabelecimento",
-        "situacoes-cadastrais",
-        "tipos-de-socio",
-        "faixas-etarias",
-      ],
-    },
-  },
-} as const;
-
 export const domainCodeParamsSchema = {
   type: "object",
-  required: ["domain", "code"],
+  required: ["codigo"],
   properties: {
-    domain: domainParamsSchema.properties.domain,
-    code: {
+    codigo: {
       type: "string",
       description:
-        "Código exato do registro dentro da tabela de domínio selecionada.",
+        "Código exato do registro dentro da tabela de domínio consultada.",
+      examples: ["02"],
     },
   },
 } as const;
@@ -139,14 +115,46 @@ export const domainListQuerystringSchema = {
     "Permite listagem paginada dos domínios com busca textual opcional e filtro por código exato.",
   properties: {
     ...paginationQuerystringSchema.properties,
-    q: {
+    busca: {
       type: "string",
       description:
-        "Busca textual opcional. Deve conter ao menos 2 caracteres úteis.",
+        "Busca textual opcional por código ou descrição. Deve conter ao menos 2 caracteres úteis.",
+      examples: ["ativa"],
     },
-    code: {
+    codigo: {
       type: "string",
       description: "Filtro opcional por código exato do domínio.",
+      examples: ["02"],
+    },
+  },
+} as const;
+
+export const infoRankingQuerystringSchema = {
+  type: "object",
+  properties: {
+    limite: {
+      type: "string",
+      description:
+        "Quantidade máxima de registros retornados no ranking. A API aplica limite máximo interno para preservar desempenho.",
+      examples: ["10"],
+    },
+  },
+} as const;
+
+export const infoCityRankingQuerystringSchema = {
+  type: "object",
+  properties: {
+    uf: {
+      type: "string",
+      description:
+        "Sigla da unidade federativa usada para filtrar municípios. Quando omitida, retorna o ranking nacional.",
+      examples: ["PR", "SP"],
+    },
+    limite: {
+      type: "string",
+      description:
+        "Quantidade máxima de municípios retornados no ranking. A API aplica limite máximo interno para preservar desempenho.",
+      examples: ["20"],
     },
   },
 } as const;

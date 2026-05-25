@@ -12,11 +12,18 @@ import {
   getDomainDefinition,
   type DomainDefinition,
 } from "./domain.catalog.js";
+import {
+  presentDomainItem,
+  presentDomainMetadata,
+  presentDomainSummaryItem,
+} from "./domain.presenter.js";
 import { DomainRepository } from "./domain.repository.js";
 
 export interface DomainListQuery {
   page?: string;
   limit?: string;
+  busca?: string;
+  codigo?: string;
   q?: string;
   code?: string;
 }
@@ -35,24 +42,23 @@ export class DomainService {
       ),
     ]);
 
-    return DOMAIN_DEFINITIONS.map((definition) => ({
-      slug: definition.slug,
-      titulo: definition.title,
-      tabela: definition.tableName,
-      resumo: definition.summary,
-      descricao: definition.description,
-      total: totals[definition.tableName] ?? 0,
-      exemplo:
-        examples.find((item) => item.slug === definition.slug)?.exemplo ?? null,
-    }));
+    return DOMAIN_DEFINITIONS.map((definition) =>
+      presentDomainSummaryItem({
+        definition,
+        total: totals[definition.tableName] ?? 0,
+        example:
+          examples.find((item) => item.slug === definition.slug)?.exemplo ??
+          null,
+      }),
+    );
   }
 
   async list(domainSlug: string, query: DomainListQuery) {
     const definition = this.resolveDomainDefinition(domainSlug);
-    const search = normalizeOptionalText(query.q);
-    const code = normalizeOptionalText(query.code);
+    const search = normalizeOptionalText(query.busca ?? query.q);
+    const code = normalizeOptionalText(query.codigo ?? query.code);
 
-    validateMinimumTextLength(search, "q", 2);
+    validateMinimumTextLength(search, "busca", 2);
 
     const pagination = parseSimplePagination(query);
 
@@ -72,21 +78,16 @@ export class DomainService {
     ]);
 
     return {
-      dominio: {
-        slug: definition.slug,
-        titulo: definition.title,
-        tabela: definition.tableName,
-        resumo: definition.summary,
-      },
+      dominio: presentDomainMetadata(definition),
       filtrosAplicados: {
-        q: search ?? null,
-        code: code ?? null,
+        busca: search ?? null,
+        codigo: code ?? null,
       },
       resultado: buildPaginatedResponse({
         page: pagination.page,
         limit: pagination.limit,
         total,
-        data: items,
+        data: items.map((item) => presentDomainItem(definition, item)),
       }),
     };
   }
@@ -113,13 +114,8 @@ export class DomainService {
     }
 
     return {
-      dominio: {
-        slug: definition.slug,
-        titulo: definition.title,
-        tabela: definition.tableName,
-        resumo: definition.summary,
-      },
-      dados: item,
+      dominio: presentDomainMetadata(definition),
+      dados: presentDomainItem(definition, item),
     };
   }
 
