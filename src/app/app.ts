@@ -8,7 +8,7 @@ export async function buildApp() {
   const app = Fastify({
     logger: true,
     bodyLimit: 1024 * 1024,
-    requestTimeout: Number(process.env.REQUEST_TIMEOUT_MS ?? 10000),
+    requestTimeout: Number(process.env.REQUEST_TIMEOUT_MS ?? 90000),
     connectionTimeout: Number(process.env.CONNECTION_TIMEOUT_MS ?? 5000),
     keepAliveTimeout: Number(process.env.KEEP_ALIVE_TIMEOUT_MS ?? 5000),
   });
