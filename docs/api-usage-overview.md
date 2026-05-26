@@ -100,7 +100,7 @@ Exemplos:
 - `GET /api/infos/empresas/ativas/por-cnae-principal`
 - `GET /api/infos/empresas/ativas/por-municipio`
 
-Esses endpoints possuem cache em memória configurável por `INFO_CACHE_TTL_SECONDS`, porque são pensados para leituras públicas e repetidas.
+Esses endpoints consultam materialized views informativas para evitar `COUNT/GROUP BY` direto nas tabelas gigantes a cada requisição. Também possuem cache em memória configurável por `INFO_CACHE_TTL_SECONDS`, porque são pensados para leituras públicas e repetidas.
 
 ## Consumo por frontends e CORS
 

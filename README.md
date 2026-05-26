@@ -73,6 +73,18 @@ De forma geral, o projeto foi pensado para oferecer uma camada de consulta organ
 - `partners`
 - `simples_options`
 
+### Materialized views informativas
+
+Os endpoints `/api/infos` leem dados pré-calculados nas seguintes materialized views:
+
+- `mv_infos_empresas_ativas_total`
+- `mv_infos_empresas_ativas_por_uf`
+- `mv_infos_empresas_ativas_por_municipio`
+- `mv_infos_empresas_ativas_por_cnae_principal`
+- `mv_infos_empresas_ativas_por_porte`
+
+Essas views devem ser criadas após a materialização das tabelas finais e atualizadas após cada nova carga mensal da base.
+
 > A API ignora propositalmente estruturas internas de processamento utilizadas pelo [CNPJ DB Loader](https://github.com/DanielArndt0/cnpj-db-loader)
 
 ## Contrato atual de busca
@@ -87,7 +99,7 @@ Regras atuais:
 
 As rotas de domínio possuem endpoints explícitos por domínio e continuam com paginação e filtros leves para apoio a interfaces e integrações auxiliares.
 
-As rotas informativas ficam em `/api/infos` e expõem indicadores prontos para consumo, como total de CNPJs ativos, ativos por UF, ativos por região, ativos por porte, ativos por CNAE principal e ativos por município.
+As rotas informativas ficam em `/api/infos` e expõem indicadores prontos para consumo, como total de CNPJs ativos, ativos por UF, ativos por região, ativos por porte, ativos por CNAE principal e ativos por município. Esses endpoints usam materialized views para evitar contagens e agrupamentos diretos nas tabelas gigantes a cada requisição.
 
 ## Documentação adicional
 

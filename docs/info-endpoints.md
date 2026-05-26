@@ -32,6 +32,38 @@ A API apresenta esse critério em português na resposta:
 
 > Para evitar ambiguidade, os totais representam CNPJs completos/estabelecimentos ativos. Uma empresa com matriz e filiais ativas pode aparecer mais de uma vez.
 
+## Fonte de leitura
+
+Os endpoints de `/api/infos` usam as materialized views informativas como fonte principal de leitura:
+
+```text
+mv_infos_empresas_ativas_total
+mv_infos_empresas_ativas_por_uf
+mv_infos_empresas_ativas_por_municipio
+mv_infos_empresas_ativas_por_cnae_principal
+mv_infos_empresas_ativas_por_porte
+```
+
+A API não executa mais `COUNT/GROUP BY` diretamente nas tabelas gigantes para esses endpoints. As materialized views precisam existir e estar atualizadas antes de liberar a API para leitura pública.
+
+Criação inicial das views:
+
+```bash
+psql -d "postgres://postgres:postgres@localhost:5432/cnpj" -f "sql/materialized-views/info-report-materialized-views.sql"
+```
+
+Após nova carga mensal da base:
+
+```bash
+psql -d "postgres://postgres:postgres@localhost:5432/cnpj" -f "sql/materialized-views/refresh-info-report-materialized-views.sql"
+```
+
+Após criar ou atualizar views/índices, atualize as estatísticas do planner:
+
+```bash
+psql -d "postgres://postgres:postgres@localhost:5432/cnpj" -f "sql/maintenance/refresh-planner-statistics.sql"
+```
+
 ## Cache
 
 Os endpoints de `/api/infos` usam cache em memória por padrão para reduzir carga em páginas públicas.
@@ -93,20 +125,13 @@ GET /api/infos/empresas/ativas/por-municipio?uf=PR&limite=20
 
 ## Índices recomendados
 
-A implementação não exige alteração estrutural no banco. Porém, para bases grandes, recomenda-se aplicar os índices de leitura em:
+As materialized views reduzem o custo das requisições públicas, mas a criação e o refresh delas ainda dependem de leitura pesada nas tabelas finais. Para bases grandes, aplique também os índices de apoio em:
 
 ```text
 sql/indexes/info-report-indexes.sql
 ```
 
-Esses índices são opcionais, não alteram tabelas e servem apenas para acelerar agrupamentos e rankings.
-
-Depois de criar os índices, execute:
-
-```sql
-ANALYZE establishments;
-ANALYZE companies;
-```
+Esses índices não alteram as tabelas de negócio; eles apenas adicionam estruturas auxiliares para leitura, agrupamento e atualização das views.
 
 ## Exemplo de resposta: total de empresas ativas
 
