@@ -97,9 +97,9 @@ Regras atuais:
 - `GET /api/listas/empresas/razaosocial`: exige `razaoSocial` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`; a resposta retorna apenas estabelecimentos ativos;
 - `GET /api/listas/empresas/socio`: exige `nomeSocio` e aceita refinamento opcional por `uf` e `municipio`; `municipio` exige `uf`; a resposta retorna apenas estabelecimentos ativos.
 
-As rotas de domínio possuem endpoints explícitos por domínio e continuam com paginação e filtros leves para apoio a interfaces e integrações auxiliares.
+As rotas de domínio possuem endpoints explícitos por domínio, paginação e filtros leves para apoio a interfaces e integrações auxiliares. Nelas, `busca` não exige quantidade mínima de caracteres e `limit` não possui teto máximo interno.
 
-As rotas informativas ficam em `/api/infos` e expõem indicadores prontos para consumo, como total de CNPJs ativos, ativos por UF, ativos por região, ativos por porte, ativos por CNAE principal e ativos por município. Esses endpoints usam materialized views para evitar contagens e agrupamentos diretos nas tabelas gigantes a cada requisição.
+As rotas operacionais/listas aceitam até 1000 registros por página. As rotas informativas ficam em `/api/infos` e expõem indicadores prontos para consumo, como total de CNPJs ativos, ativos por UF, ativos por região, ativos por porte, ativos por CNAE principal e ativos por município. Esses endpoints usam materialized views para evitar contagens e agrupamentos diretos nas tabelas gigantes a cada requisição.
 
 ## Documentação adicional
 

@@ -61,6 +61,7 @@ A resposta retorna apenas estabelecimentos ativos.
 Observações gerais:
 
 - todas as rotas aceitam `page` e `limit`
+- rotas operacionais/listas aceitam até 1000 registros por página
 - `municipio` exige `uf`
 - as listas retornam apenas estabelecimentos ativos
 - filtros textuais exigem comprimento mínimo quando enviados
@@ -84,7 +85,7 @@ Exemplos:
 - `GET /api/dominios/paises`
 - `GET /api/dominios/naturezas-juridicas`
 
-Esses endpoints aceitam paginação e filtros leves, porque trabalham com tabelas auxiliares menores do que as tabelas operacionais.
+Esses endpoints aceitam paginação e filtros leves, porque trabalham com tabelas auxiliares menores do que as tabelas operacionais. Nas rotas de domínio, `busca` não exige tamanho mínimo e `limit` não possui teto máximo interno.
 
 ### 5. Informações e indicadores
 

@@ -21,12 +21,12 @@ Todos os itens de domínio são retornados com campos em português:
 
 Todos os endpoints de listagem aceitam paginação simples e filtros leves:
 
-| Parâmetro | Descrição                                                                          |
-| --------- | ---------------------------------------------------------------------------------- |
-| `page`    | Página desejada.                                                                   |
-| `limit`   | Quantidade de itens por página. O limite máximo aplicado pela API é 50.            |
-| `busca`   | Busca textual opcional por código ou descrição. Exige ao menos 2 caracteres úteis. |
-| `codigo`  | Filtro opcional por código exato do domínio.                                       |
+| Parâmetro | Descrição                                                                                  |
+| --------- | ------------------------------------------------------------------------------------------ |
+| `page`    | Página desejada.                                                                           |
+| `limit`   | Quantidade de itens por página. Não possui teto máximo interno nas rotas de domínio.       |
+| `busca`   | Busca textual opcional por código ou descrição. Não exige quantidade mínima de caracteres. |
+| `codigo`  | Filtro opcional por código exato do domínio.                                               |
 
 Os parâmetros antigos `q` e `code` continuam aceitos internamente por compatibilidade, mas o contrato recomendado para novas integrações é `busca` e `codigo`.
 
@@ -95,6 +95,6 @@ Exemplos:
 ## Observações de uso
 
 - Domínios são rotas de apoio e podem ser usados de forma mais livre do que as rotas operacionais.
-- Mesmo assim, a API mantém paginação e limite máximo para preservar previsibilidade.
+- A API mantém paginação, mas não aplica teto máximo interno para `limit` nas rotas de domínio.
 - A busca textual em `busca` é opcional e aplicada sobre código e descrição.
 - O Swagger agora exibe cada domínio como rota própria, sem depender visualmente de `:domain`.

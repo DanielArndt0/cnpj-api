@@ -1,4 +1,7 @@
-import { paginationQuerystringSchema } from "./pagination.contract.js";
+import {
+  domainPaginationQuerystringSchema,
+  paginationQuerystringSchema,
+} from "./pagination.contract.js";
 
 export const successEnvelopeSchema = {
   type: "object",
@@ -110,15 +113,15 @@ export const domainCodeParamsSchema = {
 } as const;
 
 export const domainListQuerystringSchema = {
-  ...paginationQuerystringSchema,
+  ...domainPaginationQuerystringSchema,
   description:
     "Permite listagem paginada dos domínios com busca textual opcional e filtro por código exato.",
   properties: {
-    ...paginationQuerystringSchema.properties,
+    ...domainPaginationQuerystringSchema.properties,
     busca: {
       type: "string",
       description:
-        "Busca textual opcional por código ou descrição. Deve conter ao menos 2 caracteres úteis.",
+        "Busca textual opcional por código ou descrição. Não exige quantidade mínima de caracteres.",
       examples: ["ativa"],
     },
     codigo: {

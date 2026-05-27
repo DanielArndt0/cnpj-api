@@ -3,10 +3,7 @@ import {
   buildPaginatedResponse,
   parseSimplePagination,
 } from "../../shared/http/pagination.js";
-import {
-  normalizeOptionalText,
-  validateMinimumTextLength,
-} from "../../shared/utils/filters.js";
+import { normalizeOptionalText } from "../../shared/utils/filters.js";
 import {
   DOMAIN_DEFINITIONS,
   getDomainDefinition,
@@ -58,9 +55,10 @@ export class DomainService {
     const search = normalizeOptionalText(query.busca ?? query.q);
     const code = normalizeOptionalText(query.codigo ?? query.code);
 
-    validateMinimumTextLength(search, "busca", 2);
-
-    const pagination = parseSimplePagination(query);
+    const pagination = parseSimplePagination(query, {
+      maxLimit: null,
+      maxOffset: null,
+    });
 
     const [items, total] = await Promise.all([
       this.repository.findMany({

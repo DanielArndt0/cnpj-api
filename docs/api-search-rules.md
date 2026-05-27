@@ -98,14 +98,16 @@ Retorna o resumo dos domínios disponíveis.
 
 ### `GET /api/dominios/:domain`
 
-Permite listagem paginada dos domínios com filtros leves.
+Permite listagem paginada dos domínios com filtros leves. A busca textual é opcional e não exige quantidade mínima de caracteres.
 
 Parâmetros suportados:
 
 - `page`
 - `limit`
-- `q`
-- `code`
+- `busca`
+- `codigo`
+- `q` (compatibilidade)
+- `code` (compatibilidade)
 
 ### `GET /api/dominios/:domain/:code`
 
@@ -113,6 +115,6 @@ Recupera um item específico do domínio pelo código exato.
 
 ## Paginação
 
-O limite máximo por página é **50 registros**.
+As rotas operacionais e listas aceitam até **1000 registros por página**.
 
-Essa regra vale tanto para as rotas operacionais quanto para as rotas de domínio.
+As rotas de domínio não aplicam teto máximo interno para `limit`, pois são tabelas auxiliares usadas para filtros, dropdowns e integrações de apoio. Mesmo sem teto interno, recomenda-se usar paginação em interfaces públicas.
