@@ -133,6 +133,46 @@ npm run build
 npm start
 ```
 
+## Docker
+
+O projeto possui suporte a build e execução via Docker.
+
+Arquivos adicionados:
+
+- `infra/docker/api.Dockerfile`: imagem de produção da CNPJ API;
+- `compose.example.yml`: exemplo de Docker Compose com injeção de variáveis via `.env`;
+- `.github/workflows/docker-publish.yml`: publicação da imagem no GHCR em tags `v*.*.*`;
+- `docs/docker.md`: documentação técnica de execução e publicação.
+
+Build local:
+
+```bash
+docker build -f infra/docker/api.Dockerfile -t cnpj-api:local .
+```
+
+Execução local usando `.env`:
+
+```bash
+docker run --rm --env-file .env -p 3000:3000 cnpj-api:local
+```
+
+Execução com Compose:
+
+```bash
+cp compose.example.yml compose.yml
+docker compose up --build
+```
+
+As variáveis de ambiente são injetadas em tempo de execução. O arquivo `.env` não é copiado para a imagem Docker.
+
+A imagem publicada pelo workflow usa o namespace:
+
+```txt
+ghcr.io/danielarndt0/cnpj-api
+```
+
+Consulte [`docs/docker.md`](./docs/docker.md) para detalhes de ambiente, publicação e exemplos de `DATABASE_URL` em Docker.
+
 ## Configuração de CORS
 
 A lista de origens autorizadas para consumo da API em navegadores fica no `.env`, por meio da variável `CORS_ORIGINS`.
