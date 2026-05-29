@@ -13,7 +13,22 @@ export async function healthRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ["Health"],
-        summary: "Health check da API com validação do banco de dados",
+        summary: "Liveness check da API",
+      },
+    },
+    async () => ({
+      status: "ok",
+      service: "cnpj-api",
+      timestamp: new Date().toISOString(),
+    }),
+  );
+
+  app.get(
+    "/ready",
+    {
+      schema: {
+        tags: ["Health"],
+        summary: "Readiness check da API com validação do banco de dados",
       },
     },
     controller.check,
