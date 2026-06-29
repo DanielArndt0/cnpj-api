@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import {
+  cityDomainListQuerystringSchema,
   domainCodeParamsSchema,
   domainListQuerystringSchema,
   errorEnvelopeSchema,
@@ -35,7 +36,10 @@ export async function domainRoutes(app: FastifyInstance) {
           tags: ["Domínios"],
           summary: `Lista ${definition.title.toLowerCase()}`,
           description: `${definition.description} Aceita paginação, busca textual pelo parâmetro busca e filtro por código exato pelo parâmetro codigo.`,
-          querystring: domainListQuerystringSchema,
+          querystring:
+            definition.slug === "cidades"
+              ? cityDomainListQuerystringSchema
+              : domainListQuerystringSchema,
           response: {
             400: errorEnvelopeSchema,
             404: errorEnvelopeSchema,

@@ -142,3 +142,7 @@ vite.config.ts.timestamp-*
 
 # VSCode settings
 .vscode
+
+# Agents
+AGENTS.md
+CLAUDE.md

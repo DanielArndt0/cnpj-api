@@ -1,4 +1,5 @@
 import { query } from "../../shared/database/postgres.js";
+import { unaccentLower } from "../../shared/utils/text-search.js";
 import { DOMAIN_DEFINITIONS } from "./domain.catalog.js";
 
 export interface DomainRow {
@@ -56,7 +57,7 @@ export class DomainRepository {
     if (params.search) {
       values.push(`%${params.search}%`);
       where.push(
-        `(cast(code as text) ilike $${values.length} or description ilike $${values.length})`,
+        `(cast(code as text) ilike $${values.length} or ${unaccentLower("description")} like ${unaccentLower(`$${values.length}`)})`,
       );
     }
 
@@ -103,7 +104,7 @@ export class DomainRepository {
     if (params.search) {
       values.push(`%${params.search}%`);
       where.push(
-        `(cast(code as text) ilike $${values.length} or description ilike $${values.length})`,
+        `(cast(code as text) ilike $${values.length} or ${unaccentLower("description")} like ${unaccentLower(`$${values.length}`)})`,
       );
     }
 
@@ -112,6 +113,91 @@ export class DomainRepository {
       select count(*)::text as total
       from ${params.tableName}
       ${where.length ? `where ${where.join(" and ")}` : ""}
+      `,
+      values,
+    );
+
+    return Number(result.rows[0]?.total ?? 0);
+  }
+
+  async findCitiesByState(params: {
+    stateCode: string;
+    search?: string;
+    code?: string;
+    skip?: number;
+    take?: number;
+  }) {
+    const where = ["mv.state_code = $1"];
+    const values: unknown[] = [params.stateCode];
+
+    if (params.code) {
+      values.push(params.code);
+      where.push(`cast(mv.city_code as text) = $${values.length}`);
+    }
+
+    if (params.search) {
+      values.push(`%${params.search}%`);
+      where.push(
+        `(cast(mv.city_code as text) ilike $${values.length} or ${unaccentLower("ci.description")} like ${unaccentLower(`$${values.length}`)})`,
+      );
+    }
+
+    if (typeof params.take === "number") {
+      values.push(params.take);
+    }
+
+    const takePosition = typeof params.take === "number" ? values.length : 0;
+
+    if (typeof params.skip === "number") {
+      values.push(params.skip);
+    }
+
+    const skipPosition = typeof params.skip === "number" ? values.length : 0;
+
+    const result = await query<DomainRow>(
+      `
+      select
+        cast(mv.city_code as text) as code,
+        ci.description
+      from mv_infos_empresas_ativas_por_municipio mv
+      left join cities ci on ci.code = mv.city_code
+      where ${where.join(" and ")}
+      order by ci.description asc, cast(mv.city_code as text) asc
+      ${takePosition ? `limit $${takePosition}` : ""}
+      ${skipPosition ? `offset $${skipPosition}` : ""}
+      `,
+      values,
+    );
+
+    return result.rows;
+  }
+
+  async countCitiesByState(params: {
+    stateCode: string;
+    search?: string;
+    code?: string;
+  }) {
+    const where = ["mv.state_code = $1"];
+    const values: unknown[] = [params.stateCode];
+
+    if (params.code) {
+      values.push(params.code);
+      where.push(`cast(mv.city_code as text) = $${values.length}`);
+    }
+
+    if (params.search) {
+      values.push(`%${params.search}%`);
+      where.push(
+        `(cast(mv.city_code as text) ilike $${values.length} or ${unaccentLower("ci.description")} like ${unaccentLower(`$${values.length}`)})`,
+      );
+    }
+
+    const result = await query<{ total: string }>(
+      `
+      select count(*)::text as total
+      from mv_infos_empresas_ativas_por_municipio mv
+      left join cities ci on ci.code = mv.city_code
+      where ${where.join(" and ")}
       `,
       values,
     );

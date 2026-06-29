@@ -3,7 +3,10 @@ import {
   buildPaginatedResponse,
   parseSimplePagination,
 } from "../../shared/http/pagination.js";
-import { normalizeOptionalText } from "../../shared/utils/filters.js";
+import {
+  normalizeBrazilianStateCode,
+  normalizeOptionalText,
+} from "../../shared/utils/filters.js";
 import {
   DOMAIN_DEFINITIONS,
   getDomainDefinition,
@@ -23,6 +26,7 @@ export interface DomainListQuery {
   codigo?: string;
   q?: string;
   code?: string;
+  uf?: string;
 }
 
 export class DomainService {
@@ -55,6 +59,20 @@ export class DomainService {
     const search = normalizeOptionalText(query.busca ?? query.q);
     const code = normalizeOptionalText(query.codigo ?? query.code);
 
+    if (definition.slug === "cidades") {
+      const stateCode = normalizeBrazilianStateCode(query.uf);
+
+      if (stateCode) {
+        return this.listCitiesByState({
+          definition,
+          stateCode,
+          search,
+          code,
+          query,
+        });
+      }
+    }
+
     const pagination = parseSimplePagination(query, {
       maxLimit: null,
       maxOffset: null,
@@ -86,6 +104,49 @@ export class DomainService {
         limit: pagination.limit,
         total,
         data: items.map((item) => presentDomainItem(definition, item)),
+      }),
+    };
+  }
+
+  private async listCitiesByState(params: {
+    definition: DomainDefinition;
+    stateCode: string;
+    search?: string;
+    code?: string;
+    query: DomainListQuery;
+  }) {
+    const pagination = parseSimplePagination(params.query, {
+      defaultLimit: 100,
+      maxLimit: 1000,
+    });
+
+    const [items, total] = await Promise.all([
+      this.repository.findCitiesByState({
+        stateCode: params.stateCode,
+        search: params.search,
+        code: params.code,
+        skip: pagination.skip,
+        take: pagination.limit,
+      }),
+      this.repository.countCitiesByState({
+        stateCode: params.stateCode,
+        search: params.search,
+        code: params.code,
+      }),
+    ]);
+
+    return {
+      dominio: presentDomainMetadata(params.definition),
+      filtrosAplicados: {
+        uf: params.stateCode,
+        busca: params.search ?? null,
+        codigo: params.code ?? null,
+      },
+      resultado: buildPaginatedResponse({
+        page: pagination.page,
+        limit: pagination.limit,
+        total,
+        data: items.map((item) => presentDomainItem(params.definition, item)),
       }),
     };
   }

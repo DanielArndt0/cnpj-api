@@ -132,6 +132,16 @@ export const domainListQuerystringSchema = {
   },
 } as const;
 
+export const cityDomainListQuerystringSchema = {
+  ...domainListQuerystringSchema,
+  description:
+    "Lista municípios. Quando uf é informada, retorna apenas municípios com empresas ativas naquela unidade federativa, ordenados por nome.",
+  properties: {
+    ...domainListQuerystringSchema.properties,
+    uf: locationQuerystringProperties.uf,
+  },
+} as const;
+
 export const infoRankingQuerystringSchema = {
   type: "object",
   properties: {
